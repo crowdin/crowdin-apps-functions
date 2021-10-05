@@ -8,11 +8,21 @@ Information about Crowdin App can be found in the [About Crowdin Apps](https://s
 
 ## Status
 
-//TBD
+//TBD NPM
+
+[![GitHub issues](https://img.shields.io/github/issues/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/issues)
+[![License](https://img.shields.io/github/license/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/blob/master/LICENSE)
+
+[![codecov](https://codecov.io/gh/crowdin/crowdin-apps-functions/branch/main/graph/badge.svg)](https://codecov.io/gh/crowdin/crowdin-apps-functions)
+[![GitHub Release Date](https://img.shields.io/github/release-date/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/releases)
+[![GitHub contributors](https://img.shields.io/github/contributors/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/graphs/contributors)
 
 ## Build Status
 
-//TBD
+| Azure CI (Linux) | Azure CI (Windows) | Azure CI (MacOS) |
+|--------------------|------------------|------------------|
+|[![Build Status](https://dev.azure.com/crowdin/crowdin-apps-functions/_apis/build/status/Ubuntu?branchName=main)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=35&branchName=main)|[![Build Status](https://dev.azure.com/crowdin/crowdin-apps-functions/_apis/build/status/Windows?branchName=main)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=37&branchName=main)|[![Build Status](https://dev.azure.com/crowdin/crowdin-apps-functions/_apis/build/status/MacOS?branchName=main)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=36&branchName=main)
+|[![Azure DevOps tests (branch)](https://img.shields.io/azure-devops/tests/crowdin/crowdin-apps-functions/35/main?cacheSeconds=1800)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=35&branchName=main)|[![Azure DevOps tests (branch)](https://img.shields.io/azure-devops/tests/crowdin/crowdin-apps-functions/37/main?cacheSeconds=1800)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=37&branchName=main)|[![Azure DevOps tests (branch)](https://img.shields.io/azure-devops/tests/crowdin/crowdin-apps-functions/36/main?cacheSeconds=1800)](https://dev.azure.com/crowdin/crowdin-apps-functions/_build/latest?definitionId=36&branchName=main)
 
 ## Table of Contents
 * [Installation](#installation)
