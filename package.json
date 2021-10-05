@@ -1,0 +1,53 @@
+{
+  "name": "@crowdin/crowdin-apps-functions",
+  "version": "0.0.1",
+  "description": "Utility library to easily and quickly develop Crowdin App",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "scripts": {
+    "prepare": "husky install",
+    "test": "jest --config jestconfig.json",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint --fix \"{src,tests}/**/*.{js,ts}\"",
+    "lint-ci": "eslint \"{src,tests}/**/*.{js,ts}\"",
+    "test-coverage": "jest --config jestconfig.json --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crowdin/crowdin-apps-functions.git"
+  },
+  "keywords": [
+    "Crowdin"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^27.0.0",
+    "@types/jsonwebtoken": "^8.5.5",
+    "@types/node": "^12.0.10",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^7.0.0",
+    "jest": "^27.0.0",
+    "jest-circus": "^27.0.0",
+    "jest-junit": "^12.0.0",
+    "lint-staged": ">=8",
+    "prettier": "^1.18.2",
+    "ts-jest": "^27.0.0",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "@crowdin/crowdin-api-client": "1.12.1",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "bugs": {
+    "url": "https://github.com/crowdin/crowdin-apps-functions/issues"
+  },
+  "homepage": "https://github.com/crowdin/crowdin-apps-functions#readme",
+  "directories": {
+    "test": "tests"
+  }
+}
