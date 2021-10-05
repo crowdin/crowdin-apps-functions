@@ -18,7 +18,10 @@
     "url": "git+https://github.com/crowdin/crowdin-apps-functions.git"
   },
   "keywords": [
-    "Crowdin"
+    "Crowdin",
+    "Apps",
+    "Applications",
+    "App"
   ],
   "license": "MIT",
   "devDependencies": {
