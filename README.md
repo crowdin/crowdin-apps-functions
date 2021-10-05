@@ -8,8 +8,8 @@ Information about Crowdin App can be found in the [About Crowdin Apps](https://s
 
 ## Status
 
-//TBD NPM
-
+[![npm](https://img.shields.io/npm/v/@crowdin/crowdin-apps-functions?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/@crowdin/crowdin-apps-functions)
+[![npm](https://img.shields.io/npm/dt/@crowdin/crowdin-apps-functions?cacheSeconds=1800)](https://www.npmjs.com/package/@crowdin/crowdin-apps-functions)
 [![GitHub issues](https://img.shields.io/github/issues/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/issues)
 [![License](https://img.shields.io/github/license/crowdin/crowdin-apps-functions?cacheSeconds=3600)](https://github.com/crowdin/crowdin-apps-functions/blob/master/LICENSE)
 
