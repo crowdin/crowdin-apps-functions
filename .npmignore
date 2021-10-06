@@ -2,6 +2,7 @@ src
 ci
 tests
 .vscode
+.idea
 .eslint
 .prettierrc
 jestconfig.json
