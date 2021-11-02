@@ -59,6 +59,15 @@ export function constructCrowdinIdFromJwtPayload(jwtPayload: JwtPayload): string
 
 /**
  *
+ * @param crowdinId crowdin id (from {@link constructCrowdinIdFromJwtPayload})
+ * @returns crowdin project id
+ */
+export function getProjectId(crowdinId: string): number {
+    return Number(crowdinId.split('__')[1]);
+}
+
+/**
+ *
  * @param jwtToken jwt token which Crowdin adds to app iframe
  * @param clientSecret OAuth client secret of the app
  * @returns
