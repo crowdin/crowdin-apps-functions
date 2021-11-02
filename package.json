@@ -1,6 +1,6 @@
 {
   "name": "@crowdin/crowdin-apps-functions",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Utility library to easily and quickly develop Crowdin App",
   "main": "out/index.js",
   "types": "out/index.d.ts",
@@ -43,7 +43,7 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "@crowdin/crowdin-api-client": "1.12.1",
+    "@crowdin/crowdin-api-client": "1.12.3",
     "jsonwebtoken": "^8.5.1"
   },
   "bugs": {
