@@ -1,4 +1,4 @@
-import Crowdin, { SourceFilesModel } from '@crowdin/crowdin-api-client';
+import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
 
 /**
  *
@@ -98,4 +98,34 @@ export async function getOrCreateFolder(
         ).data.map(e => e.data);
     }
     return { folder, files, created };
+}
+
+/**
+ *
+ * @param crowdinClient crowdin client id
+ * @param projectId project id
+ * @param fileId file id
+ * @param language language id
+ * @param fileName file name for upload storage request
+ * @param fileContent file content
+ * @param request extra request fields for upload translation request
+ * @returns upload translation response
+ */
+export async function uploadTranslations(
+    crowdinClient: Crowdin,
+    projectId: number,
+    fileId: number,
+    language: string,
+    fileName: string,
+    fileContent: any,
+    request: Omit<TranslationsModel.UploadTranslationRequest, 'fileId' | 'storageId'> = {},
+): Promise<TranslationsModel.UploadTranslationResponse> {
+    const storage = await crowdinClient.uploadStorageApi.addStorage(fileName, fileContent);
+    return (
+        await crowdinClient.translationsApi.uploadTranslation(projectId, language, {
+            fileId,
+            storageId: storage.data.id,
+            ...request,
+        })
+    ).data;
 }
