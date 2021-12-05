@@ -1,4 +1,5 @@
 import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
+import axios from 'axios';
 
 /**
  *
@@ -102,7 +103,7 @@ export async function getOrCreateFolder(
 
 /**
  *
- * @param crowdinClient crowdin client id
+ * @param crowdinClient crowdin client instance
  * @param projectId project id
  * @param fileId file id
  * @param language language id
@@ -128,4 +129,109 @@ export async function uploadTranslations(
             ...request,
         })
     ).data;
+}
+
+/**
+ *
+ * @param crowdinClient crowdin client instance
+ * @param projectId project id
+ * @param directory directory name where files are located
+ * @param fileEntities files information
+ * @param parentDirectory parent directory
+ */
+export async function updateSourceFiles(
+    crowdinClient: Crowdin,
+    projectId: number,
+    directory: string,
+    fileEntities: FileEntity[],
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void> {
+    const directories = await crowdinClient.sourceFilesApi.withFetchAll().listProjectDirectories(projectId);
+
+    const { folder, files } = await getOrCreateFolder(
+        directories.data.map(d => d.data),
+        crowdinClient,
+        projectId,
+        directory,
+        parentDirectory,
+    );
+
+    await Promise.all(
+        fileEntities.map(
+            async fileEntity =>
+                await updateOrCreateFile(
+                    crowdinClient,
+                    projectId,
+                    fileEntity.name,
+                    fileEntity.title,
+                    fileEntity.type,
+                    folder.id,
+                    fileEntity.data,
+                    files.find(f => f.name === fileEntity.name),
+                ),
+        ),
+    );
+}
+
+/**
+ *
+ * @param crowdinClient crowdin client instance
+ * @param projectId projecy id
+ * @param directory directory name where source files are located
+ * @param request request if file files and languages info
+ * @param handleFn function that will be invoked for each translation file
+ * @param parentDirectory parent directory
+ */
+export async function handleTranslartions(
+    crowdinClient: Crowdin,
+    projectId: number,
+    directory: string,
+    request: TranslationsRequest,
+    handleFn: (translations: any, language: string, file: SourceFilesModel.File) => Promise<void>,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void> {
+    const directories = await crowdinClient.sourceFilesApi.withFetchAll().listProjectDirectories(projectId);
+
+    const { files } = await getFolder(
+        directories.data.map(d => d.data),
+        crowdinClient,
+        projectId,
+        directory,
+        parentDirectory,
+    );
+
+    for (const [fileId, targetLanguages] of Object.entries(request)) {
+        const file = files.find(f => f.id === parseInt(fileId));
+        if (!file) {
+            continue;
+        }
+        await Promise.all(
+            targetLanguages.map(async languageCode => {
+                const translationsLink = await crowdinClient.translationsApi.buildProjectFileTranslation(
+                    projectId,
+                    file.id,
+                    { targetLanguageId: languageCode },
+                );
+
+                if (!translationsLink) {
+                    return;
+                }
+
+                const response = await axios.get(translationsLink.data.url);
+
+                await handleFn(response.data, languageCode, file);
+            }),
+        );
+    }
+}
+
+export interface FileEntity {
+    name: string;
+    title: string;
+    type: SourceFilesModel.FileType;
+    data: any;
+}
+
+export interface TranslationsRequest {
+    [fileId: string]: string[];
 }
