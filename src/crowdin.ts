@@ -182,7 +182,7 @@ export async function updateSourceFiles(
  * @param handleFn function that will be invoked for each translation file
  * @param parentDirectory parent directory
  */
-export async function handleTranslartions(
+export async function handleTranslations(
     crowdinClient: Crowdin,
     projectId: number,
     directory: string,

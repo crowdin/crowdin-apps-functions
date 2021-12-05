@@ -91,7 +91,7 @@ Please refer to JSDoc for more details.
 | `getOrCreateFolder`                | get folder with files under it or create it                     |
 | `uploadTranslations`               | adds file to storage and sends it in upload translation request |
 | `updateSourceFiles`                | updates source files under specific directory                   |
-| `handleTranslartions`              | executes side effect function for each translated file          |
+| `handleTranslations`               | executes side effect function for each translated file          |
 
 Also please have a look to working example of the [Crowdin App](https://github.com/crowdin/create-crowdin-app). It can be used as a basis for your app.
 
