@@ -7,14 +7,12 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
     strategy:
-      maxParallel: 4
+      maxParallel: 2
       matrix:
         node-14:
           node_version: ^14.15.0
         node-12:
           node_version: ^12.2.0
-        node-10:
-          node_version: ^10.10.0
     steps:
       - task: NodeTool@0
         inputs:
