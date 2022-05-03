@@ -62,7 +62,7 @@ export async function getFolder(
     let files: SourceFilesModel.File[] = [];
     if (folder) {
         files = (
-            await crowdinClient.sourceFilesApi.withFetchAll().listProjectFiles(projectId, undefined, folder.id)
+            await crowdinClient.sourceFilesApi.withFetchAll().listProjectFiles(projectId, { directoryId: folder.id })
         ).data.map(e => e.data);
     }
     return { folder, files };
@@ -95,7 +95,7 @@ export async function getOrCreateFolder(
             })
         ).data;
         files = (
-            await crowdinClient.sourceFilesApi.withFetchAll().listProjectFiles(projectId, undefined, folder.id)
+            await crowdinClient.sourceFilesApi.withFetchAll().listProjectFiles(projectId, { directoryId: folder.id })
         ).data.map(e => e.data);
     }
     return { folder, files, created };
