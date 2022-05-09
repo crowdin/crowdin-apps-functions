@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
 
@@ -225,6 +226,47 @@ export async function handleTranslations(
     }
 }
 
+export class PaymentRequiredError extends Error {
+    public subscribeLink: string;
+    constructor(subscribeLink: string) {
+        super('Payment required');
+        this.subscribeLink = subscribeLink;
+    }
+}
+
+/**
+ *
+ * @param param0.appIdentifier method request
+ * @param param0.token bearer token
+ * @param param0.organization crowdin organization
+ */
+export async function getSubscription({
+    appIdentifier,
+    token,
+    organization,
+}: SubscriptionRequest): Promise<Subscription> {
+    const url = !!organization
+        ? `https://${organization}.api.crowdin.com/api/v2/applications/${appIdentifier}/subscription`
+        : `https://crowdin.com/api/v2/applications/${appIdentifier}/subscription`;
+    try {
+        const response = await axios.get<Subscription>(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (e) {
+        if (e.response) {
+            if (e.response.status === 402) {
+                throw new PaymentRequiredError(e.response.data?.subscribe_link);
+            } else if (e.response.data?.error?.message) {
+                throw new Error(e.response.data.error.message);
+            }
+        }
+        throw e;
+    }
+}
+
 export interface FileEntity {
     name: string;
     title: string;
@@ -234,4 +276,14 @@ export interface FileEntity {
 
 export interface TranslationsRequest {
     [fileId: string]: string[];
+}
+
+export interface SubscriptionRequest {
+    token: string;
+    organization?: string;
+    appIdentifier: string;
+}
+
+export interface Subscription {
+    expires: string;
 }
