@@ -228,9 +228,12 @@ export async function handleTranslations(
 
 export class PaymentRequiredError extends Error {
     public subscribeLink: string;
+    public initializedAt: string;
     constructor(subscribeLink: string) {
         super('Payment required');
         this.subscribeLink = subscribeLink;
+        this.initializedAt = initializedAt;
+        this.code = 402;
     }
 }
 
@@ -258,7 +261,7 @@ export async function getSubscription({
     } catch (e) {
         if (e.response) {
             if (e.response.status === 402) {
-                throw new PaymentRequiredError(e.response.data?.subscribe_link);
+                throw new PaymentRequiredError(e.response.data?.subscribeLink, e.response.data?.initializedAt);
             } else if (e.response.data?.error?.message) {
                 throw new Error(e.response.data.error.message);
             }
