@@ -229,7 +229,7 @@ export async function handleTranslations(
 export class PaymentRequiredError extends Error {
     public subscribeLink: string;
     public initializedAt: string;
-    constructor(subscribeLink: string) {
+    constructor(subscribeLink: string, initializedAt: string) {
         super('Payment required');
         this.subscribeLink = subscribeLink;
         this.initializedAt = initializedAt;
