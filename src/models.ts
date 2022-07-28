@@ -21,6 +21,7 @@ export interface JwtPayloadContext {
 
 export interface InstallEvent {
     appId: string;
+    appSecret: string;
     clientId: string;
     userId: number;
     organizationId: number;
