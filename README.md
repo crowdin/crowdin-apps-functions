@@ -81,6 +81,7 @@ Please refer to JSDoc for more details.
 
 | Method name                        | Description                                                     |
 |------------------------------------|-----------------------------------------------------------------|
+| `fetchAppToken`                    | fetch API token for communication with Crowdin API              |
 | `generateOAuthToken`               | generates OAuth token for communication with Crowdin API        |
 | `refreshOAuthToken`                | refresh OAuth token in case if it was expired                   |
 | `constructCrowdinIdFromJwtPayload` | creates unique id of crowdin user and project from the context  |
