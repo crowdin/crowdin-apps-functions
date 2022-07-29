@@ -1,3 +1,8 @@
+export interface AppToken {
+    accessToken: string;
+    expiresIn: number;
+}
+
 export interface Token {
     accessToken: string;
     refreshToken: string;
