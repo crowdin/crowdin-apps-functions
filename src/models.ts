@@ -1,3 +1,8 @@
+export interface AppToken {
+    accessToken: string;
+    expiresIn: number;
+}
+
 export interface Token {
     accessToken: string;
     refreshToken: string;
@@ -21,6 +26,7 @@ export interface JwtPayloadContext {
 
 export interface InstallEvent {
     appId: string;
+    appSecret: string;
     clientId: string;
     userId: number;
     organizationId: number;

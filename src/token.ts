@@ -1,8 +1,42 @@
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
-import { JwtPayload, Token } from './models';
+import { AppToken, JwtPayload, Token } from './models';
 
 const crowdinAuthUrl = 'https://accounts.crowdin.com/oauth/token';
+
+/**
+ *
+ * @param appId Crowdin app identifier
+ * @param appSecret Crowdin app secret received from install event
+ * @param clientId OAuth client id of the app
+ * @param clientSecret OAuth client secret of the app
+ * @param domain Crowdin organization domain
+ * @param userId The user who installed the application
+ * @returns token object which is needed to establish communication between app and Crowdin API
+ */
+export async function fetchAppToken(
+    appId: string,
+    appSecret: string,
+    clientId: string,
+    clientSecret: string,
+    domain: string,
+    userId: number,
+): Promise<AppToken> {
+    const token = await axios.post(crowdinAuthUrl, {
+        grant_type: 'crowdin_app',
+        client_id: clientId,
+        client_secret: clientSecret,
+        app_id: appId,
+        app_secret: appSecret,
+        domain: domain,
+        userId: userId,
+    });
+
+    return {
+        accessToken: token.data.access_token,
+        expiresIn: +token.data.expires_in,
+    };
+}
 
 /**
  *
