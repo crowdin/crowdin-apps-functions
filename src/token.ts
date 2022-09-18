@@ -12,6 +12,7 @@ const crowdinAuthUrl = 'https://accounts.crowdin.com/oauth/token';
  * @param clientSecret OAuth client secret of the app
  * @param domain Crowdin organization domain
  * @param userId The user who installed the application
+ * @param url Custom url for token exchange
  * @returns token object which is needed to establish communication between app and Crowdin API
  */
 export async function fetchAppToken(
@@ -21,8 +22,9 @@ export async function fetchAppToken(
     clientSecret: string,
     domain: string,
     userId: number,
+    url?: string,
 ): Promise<AppToken> {
-    const token = await axios.post(crowdinAuthUrl, {
+    const token = await axios.post(url || crowdinAuthUrl, {
         grant_type: 'crowdin_app',
         client_id: clientId,
         client_secret: clientSecret,
@@ -43,10 +45,16 @@ export async function fetchAppToken(
  * @param clientId OAuth client id of the app
  * @param clientSecret OAuth client secret of the app
  * @param code code used for authorization of your Crowdin app (returned in install event payload)
+ * @param url Custom url for token exchange
  * @returns token object which is needed to establish communication between app and Crowdin API
  */
-export async function generateOAuthToken(clientId: string, clientSecret: string, code: string): Promise<Token> {
-    const token = await axios.post(crowdinAuthUrl, {
+export async function generateOAuthToken(
+    clientId: string,
+    clientSecret: string,
+    code: string,
+    url?: string,
+): Promise<Token> {
+    const token = await axios.post(url || crowdinAuthUrl, {
         grant_type: 'authorization_code',
         client_id: clientId,
         client_secret: clientSecret,
@@ -64,10 +72,16 @@ export async function generateOAuthToken(clientId: string, clientSecret: string,
  * @param clientId OAuth client id of the app
  * @param clientSecret OAuth client secret of the app
  * @param refreshToken {@link Token#refreshToken}
+ * @param url Custom url for token exchange
  * @returns updated token object
  */
-export async function refreshOAuthToken(clientId: string, clientSecret: string, refreshToken: string): Promise<Token> {
-    const token = await axios.post(crowdinAuthUrl, {
+export async function refreshOAuthToken(
+    clientId: string,
+    clientSecret: string,
+    refreshToken: string,
+    url?: string,
+): Promise<Token> {
+    const token = await axios.post(url || crowdinAuthUrl, {
         grant_type: 'refresh_token',
         client_id: clientId,
         client_secret: clientSecret,
