@@ -247,12 +247,18 @@ export async function getSubscription({
     appIdentifier,
     token,
     organization,
+    baseUrl,
 }: SubscriptionRequest): Promise<Subscription> {
-    const url = !!organization
-        ? `https://${organization}.api.crowdin.com/api/v2/applications/${appIdentifier}/subscription`
-        : `https://crowdin.com/api/v2/applications/${appIdentifier}/subscription`;
+    let requestUrl;
+    if (baseUrl) {
+        requestUrl = `${baseUrl}/api/v2/applications/${appIdentifier}/subscription`;
+    } else if (!!organization) {
+        requestUrl = `https://${organization}.api.crowdin.com/api/v2/applications/${appIdentifier}/subscription`;
+    } else {
+        requestUrl = `https://crowdin.com/api/v2/applications/${appIdentifier}/subscription`;
+    }
     try {
-        const response = await axios.get<Subscription>(url, {
+        const response = await axios.get<Subscription>(requestUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -285,6 +291,7 @@ export interface SubscriptionRequest {
     token: string;
     organization?: string;
     appIdentifier: string;
+    baseUrl?: string;
 }
 
 export interface Subscription {
