@@ -12,5 +12,13 @@
         "jsx",
         "json",
         "node"
+    ],
+    "globals": {
+        "ts-jest": {
+          "compiler": "ttypescript"
+        }
+      },
+    "setupFiles": [
+    "<rootDir>config.ts"
     ]
 }
