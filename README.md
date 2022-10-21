@@ -4,7 +4,7 @@
 
 Lightweight library with utility functions to help you quickly create your own Crowdin App.
 
-Information about Crowdin App can be found in the [About Crowdin Apps](https://support.crowdin.com/crowdin-apps/) and in the [Getting Started Guide](https://support.crowdin.com/crowdin-apps-introduction/).
+Information about Crowdin Apps can be found in the [About Crowdin Apps](https://developer.crowdin.com/crowdin-apps-about/) and in the [Quick Start](https://developer.crowdin.com/crowdin-apps-quick-start/) guide.
 
 ## Status
 
