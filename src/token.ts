@@ -118,11 +118,16 @@ export function getProjectId(crowdinId: string): number {
  *
  * @param jwtToken jwt token which Crowdin adds to app iframe
  * @param clientSecret OAuth client secret of the app
- * @returns
+ * @param options extra options for verification
+ * @returns jwt payload
  */
-export async function validateJwtToken(jwtToken: string, clientSecret: string): Promise<JwtPayload> {
+export async function validateJwtToken(
+    jwtToken: string,
+    clientSecret: string,
+    options?: jwt.VerifyOptions,
+): Promise<JwtPayload> {
     return new Promise((res, rej) => {
-        jwt.verify(jwtToken, clientSecret, (err, decoded) => {
+        jwt.verify(jwtToken, clientSecret, options, (err, decoded) => {
             if (err) {
                 rej(err);
             } else {
