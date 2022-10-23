@@ -124,7 +124,7 @@ export function getProjectId(crowdinId: string): number {
 export async function validateJwtToken(
     jwtToken: string,
     clientSecret: string,
-    options?: jwt.VerifyOptions,
+    options?: VerifyOptions,
 ): Promise<JwtPayload> {
     return new Promise((res, rej) => {
         jwt.verify(jwtToken, clientSecret, options, (err, decoded) => {
@@ -135,4 +135,8 @@ export async function validateJwtToken(
             }
         });
     });
+}
+
+export interface VerifyOptions {
+    ignoreExpiration: boolean;
 }
