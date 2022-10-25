@@ -74,13 +74,14 @@ describe('UpdateOrCreateFile function', () => {
     });
 });
 
-describe('getFolder function', () => {
+describe('GetFolder function', () => {
     let client: Crowdin;
     let spyMaxLimit: number | undefined;
     let spyProjectId: number;
     let spyOptions: SourceFilesModel.ListProjectFilesOptions | undefined;
     let file: SourceFilesModel.File;
     const parentFolder = createMock<SourceFilesModel.Directory>({ name: 'parentFolder', id: 3 });
+
     beforeEach(() => {
         file = createMock<SourceFilesModel.File>();
         client = createMock<Crowdin>({
@@ -116,6 +117,7 @@ describe('getFolder function', () => {
     it('retrives folder and files in it', async () => {
         const folder = createMock<SourceFilesModel.Directory>({ name: 'directoryName', id: 2 });
         const directories = [folder];
+
         await getFolder(directories, client, 1, folder.name).then(result => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
             expect(spyMaxLimit).toBe(undefined);
@@ -130,6 +132,7 @@ describe('getFolder function', () => {
             id: 2,
             directoryId: parentFolder.id,
         });
+
         const directories = [folder];
         await getFolder(directories, client, 1, folder.name, parentFolder).then(result => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
