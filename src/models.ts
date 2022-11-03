@@ -32,7 +32,7 @@ export interface InstallEvent {
     organizationId: number;
     domain?: string;
     baseUrl: string;
-    code: string;
+    code?: string;
 }
 
 export interface UninstallEvent {
