@@ -31,7 +31,7 @@ export async function fetchAppToken(
         app_id: appId,
         app_secret: appSecret,
         domain: domain,
-        userId: userId,
+        user_id: userId,
     });
 
     return {
