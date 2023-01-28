@@ -41,7 +41,7 @@ Information about Crowdin Apps can be found in the [About Crowdin Apps](https://
 ```typescript
 import { generateOAuthToken } from '@crowdin/crowdin-apps-functions';
 
-generateOAuthToken('app_client_id', 'app_client_secret', 'code_from_install_event');
+generateOAuthToken({ clientId: 'app_client_id', clientSecret: 'app_client_secret', code: 'code_from_install_event'});
 ```
 
 </details>
@@ -52,7 +52,7 @@ generateOAuthToken('app_client_id', 'app_client_secret', 'code_from_install_even
 ```javascript
 import { generateOAuthToken } from '@crowdin/crowdin-apps-functions';
 
-generateOAuthToken('app_client_id', 'app_client_secret', 'code_from_install_event');
+generateOAuthToken({ clientId: 'app_client_id', clientSecret: 'app_client_secret', code: 'code_from_install_event'});
 ```
 
 </details>
@@ -63,7 +63,7 @@ generateOAuthToken('app_client_id', 'app_client_secret', 'code_from_install_even
 ```javascript
 const crowdinFunctions = require('@crowdin/crowdin-apps-functions');
 
-crowdinFunctions.generateOAuthToken('app_client_id', 'app_client_secret', 'code_from_install_event');
+crowdinFunctions.generateOAuthToken({ clientId: 'app_client_id', clientSecret: 'app_client_secret', code: 'code_from_install_event'});
 ```
 
 </details>
