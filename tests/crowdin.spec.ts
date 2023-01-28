@@ -1,11 +1,3 @@
-import {
-    updateOrCreateFile,
-    getFolder,
-    getOrCreateFolder,
-    uploadTranslations,
-    updateSourceFiles,
-    FileEntity,
-} from '../src';
 import Crowdin, {
     ResponseList,
     ResponseObject,
@@ -15,6 +7,14 @@ import Crowdin, {
     UploadStorageModel,
 } from '@crowdin/crowdin-api-client';
 import { createMock } from 'ts-auto-mock';
+import {
+    FileEntity,
+    getFolder,
+    getOrCreateFolder,
+    updateOrCreateFile,
+    updateSourceFiles,
+    uploadTranslations,
+} from '../src';
 
 describe('UpdateOrCreateFile function', () => {
     let client: Crowdin;
@@ -53,15 +53,22 @@ describe('UpdateOrCreateFile function', () => {
     });
 
     it('should create file when source file is undefined', async () => {
-        await updateOrCreateFile(client, 1, 'name', 'title', 'auto', 2, null, undefined).then(result => {
+        await updateOrCreateFile({
+            client,
+            projectId: 1,
+            name: 'name',
+            title: 'title',
+            data: 'auto',
+            directoryId: 2,
+        }).then(result => {
             expect(result).toBe(0);
             expect(spyProjectId).toBe(1);
             expect(spyRequest).toStrictEqual({
                 storageId: 0,
                 name: 'name',
                 title: 'title',
-                type: 'auto',
                 directoryId: 2,
+                type: undefined,
             });
         });
     });
@@ -71,7 +78,15 @@ describe('UpdateOrCreateFile function', () => {
             id: 3,
         });
 
-        await updateOrCreateFile(client, 1, 'name', 'title', 'auto', 2, null, file).then(result => {
+        await updateOrCreateFile({
+            client,
+            projectId: 1,
+            name: 'name',
+            title: 'title',
+            data: 'auto',
+            directoryId: 2,
+            file,
+        }).then(result => {
             expect(result).toBe(3);
             expect(spyProjectId).toBe(1);
             expect(spyFileId).toBe(3);
@@ -179,7 +194,12 @@ describe('GetFolder function', () => {
         const folder = createMock<SourceFilesModel.Directory>({ name: 'directoryName', id: 2 });
         const directories = [folder];
 
-        await getFolder(directories, client, 1, folder.name).then(result => {
+        await getFolder({
+            directories,
+            client,
+            projectId: 1,
+            directoryName: folder.name,
+        }).then(result => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
             expect(spyMaxLimit).toBe(undefined);
             expect(spyProjectId).toBe(1);
@@ -195,7 +215,13 @@ describe('GetFolder function', () => {
         });
 
         const directories = [folder];
-        await getFolder(directories, client, 1, folder.name, parentFolder).then(result => {
+        await getFolder({
+            directories,
+            client,
+            projectId: 1,
+            directoryName: folder.name,
+            parentDirectory: parentFolder,
+        }).then(result => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
             expect(spyMaxLimit).toBe(undefined);
             expect(spyProjectId).toBe(1);
@@ -212,7 +238,13 @@ describe('GetFolder function', () => {
             });
             const directories = [folder];
 
-            await getOrCreateFolder(directories, client, 1, folder.name, parentFolder).then(result => {
+            await getOrCreateFolder({
+                directories,
+                client,
+                projectId: 1,
+                directoryName: folder.name,
+                parentDirectory: parentFolder,
+            }).then(result => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: false });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -231,7 +263,13 @@ describe('GetFolder function', () => {
             });
             const directories: SourceFilesModel.Directory[] = [];
 
-            await getOrCreateFolder(directories, client, 1, folder.name, parentFolder).then(result => {
+            await getOrCreateFolder({
+                directories,
+                client,
+                projectId: 1,
+                directoryName: folder.name,
+                parentDirectory: parentFolder,
+            }).then(result => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: true });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -251,7 +289,12 @@ describe('GetFolder function', () => {
             });
             const directories: SourceFilesModel.Directory[] = [];
 
-            await getOrCreateFolder(directories, client, 1, folder.name).then(result => {
+            await getOrCreateFolder({
+                directories,
+                client,
+                projectId: 1,
+                directoryName: folder.name,
+            }).then(result => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: true });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -262,7 +305,12 @@ describe('GetFolder function', () => {
         describe('UpdateSourceFiles function', () => {
             it('updates or creates the file', async () => {
                 const fileEntities = [createMock<FileEntity>()];
-                await updateSourceFiles(client, 1, 'directoryName', fileEntities).then(() => {
+                await updateSourceFiles({
+                    client,
+                    projectId: 1,
+                    directory: 'directoryName',
+                    fileEntities,
+                }).then(() => {
                     expect(spyProjectId).toBe(1);
                     expect(spyRequestUpdateOrRestoreFile).toStrictEqual({ storageId: 0 });
                     expect(spyFileId).toBe(0);
@@ -332,7 +380,15 @@ describe('UploadTranslations function', () => {
             markAddedTranslationsAsDone: false,
             translateHidden: false,
         };
-        await uploadTranslations(client, 1, 2, 'language', 'fileName', 'fileContent', request).then(result => {
+        await uploadTranslations({
+            client,
+            projectId: 1,
+            fileId: 2,
+            language: 'language',
+            fileName: 'fileName',
+            fileContent: 'fileContent',
+            request,
+        }).then(result => {
             expect(result).toStrictEqual({ fileId: 2, languageId: 'language', projectId: 1, storageId: 3 });
             expect(spyFileName).toBe('fileName');
             expect(spyContentType).toBeUndefined();
