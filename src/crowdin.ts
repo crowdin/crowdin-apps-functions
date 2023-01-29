@@ -1,29 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
 
-/**
- *
- * @param arguments arguments
- * @param arguments.client crowdin client instance
- * @param arguments.projectId crowdin project id
- * @param arguments.name file name
- * @param arguments.title file title
- * @param arguments.type file type
- * @param arguments.directoryId directory id
- * @param arguments.data file data
- * @param arguments.file file object
- * @returns id of newly created or existing file id
- */
-export async function updateOrCreateFile({
-    client,
-    projectId,
-    name,
-    title,
-    type,
-    directoryId,
-    data,
-    file,
-}: {
+interface UpdateOrCreateFileArgs {
     client: Crowdin;
     projectId: number;
     name: string;
@@ -32,176 +11,328 @@ export async function updateOrCreateFile({
     directoryId?: number;
     data: any;
     file?: SourceFilesModel.File;
-}): Promise<number> {
-    const storageFile = await client.uploadStorageApi.addStorage(name, data);
-    if (file) {
-        await client.sourceFilesApi.updateOrRestoreFile(projectId, file.id, { storageId: storageFile.data.id });
-        return file.id;
+}
+
+function isUpdateOrCreateFileArgs(arg: Crowdin | UpdateOrCreateFileArgs): arg is UpdateOrCreateFileArgs {
+    //@ts-ignore
+    return arg.client && arg.projectId;
+}
+
+/**
+ *
+ * @param client crowdin client instance
+ * @param projectId crowdin project id
+ * @param name file name
+ * @param title file title
+ * @param type file type
+ * @param directoryId directory id
+ * @param data file data
+ * @param file file object
+ * @returns id of newly created or existing file id
+ */
+export async function updateOrCreateFile(
+    client: Crowdin,
+    projectId: number,
+    name: string,
+    title: string,
+    type: SourceFilesModel.FileType,
+    directoryId: number,
+    data: any,
+    file?: SourceFilesModel.File,
+): Promise<number>;
+
+export async function updateOrCreateFile(args: UpdateOrCreateFileArgs): Promise<number>;
+
+export async function updateOrCreateFile(
+    clientOrArgs: Crowdin | UpdateOrCreateFileArgs,
+    projectId?: number,
+    name?: string,
+    title?: string,
+    type?: SourceFilesModel.FileType,
+    directoryId?: number,
+    data?: any,
+    file?: SourceFilesModel.File,
+): Promise<number> {
+    let options: UpdateOrCreateFileArgs;
+    if (isUpdateOrCreateFileArgs(clientOrArgs)) {
+        options = clientOrArgs;
     } else {
-        const newFile = await client.sourceFilesApi.createFile(projectId, {
+        //@ts-ignore
+        options = { client: clientOrArgs, projectId, name, title, type, directoryId, data, file };
+    }
+    const storageFile = await options.client.uploadStorageApi.addStorage(options.name, options.data);
+    if (options.file) {
+        await options.client.sourceFilesApi.updateOrRestoreFile(options.projectId, options.file.id, {
             storageId: storageFile.data.id,
-            name,
-            title,
-            type,
-            directoryId,
+        });
+        //@ts-ignore
+        return options.file.id;
+    } else {
+        const newFile = await options.client.sourceFilesApi.createFile(options.projectId, {
+            storageId: storageFile.data.id,
+            name: options.name,
+            title: options.title,
+            type: options.type,
+            directoryId: options.directoryId,
         });
         return newFile.data.id;
     }
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.directories all directories
- * @param arguments.client crowdin client instance
- * @param arguments.projectId project id
- * @param arguments.directoryName directory name to find
- * @param arguments.parentDirectory parent directory
- * @returns found folder (or undefined in case if directory for given name does not exists) and files under it
- */
-export async function getFolder({
-    directories,
-    client,
-    projectId,
-    directoryName,
-    parentDirectory,
-}: {
+interface GetFolderArgs {
     directories: SourceFilesModel.Directory[];
     client: Crowdin;
     projectId: number;
     directoryName: string;
     parentDirectory?: SourceFilesModel.Directory;
-}): Promise<{ folder?: SourceFilesModel.Directory; files: SourceFilesModel.File[] }> {
-    const folder = directories.find(
+}
+
+function isGetFolderArgs(arg: GetFolderArgs | SourceFilesModel.Directory[]): arg is GetFolderArgs {
+    return !Array.isArray(arg);
+}
+
+/**
+ *
+ * @param directories all directories
+ * @param crowdinClient crowdin client instance
+ * @param projectId project id
+ * @param directoryName directory name to find
+ * @param parentDirectory parent directory
+ * @returns found folder (or undefined in case if directory for given name does not exists) and files under it
+ */
+export async function getFolder(
+    directories: SourceFilesModel.Directory[],
+    crowdinClient: Crowdin,
+    projectId: number,
+    directoryName: string,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<{ folder?: SourceFilesModel.Directory; files: SourceFilesModel.File[] }>;
+
+export async function getFolder(
+    args: GetFolderArgs,
+): Promise<{ folder?: SourceFilesModel.Directory; files: SourceFilesModel.File[] }>;
+
+export async function getFolder(
+    directoriesOrArgs: SourceFilesModel.Directory[] | GetFolderArgs,
+    crowdinClient?: Crowdin,
+    projectId?: number,
+    directoryName?: string,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<{ folder?: SourceFilesModel.Directory; files: SourceFilesModel.File[] }> {
+    let args: GetFolderArgs;
+    if (isGetFolderArgs(directoriesOrArgs)) {
+        args = directoriesOrArgs;
+    } else {
+        //@ts-ignore
+        args = { directories: directoriesOrArgs, client: crowdinClient, projectId, directoryName, parentDirectory };
+    }
+    const folder = args.directories.find(
         d =>
-            d.name === directoryName && ((!parentDirectory && !d.directoryId) || d.directoryId === parentDirectory?.id),
+            d.name === args.directoryName &&
+            ((!args.parentDirectory && !d.directoryId) || d.directoryId === args.parentDirectory?.id),
     );
     let files: SourceFilesModel.File[] = [];
     if (folder) {
         files = (
-            await client.sourceFilesApi.withFetchAll().listProjectFiles(projectId, { directoryId: folder.id })
+            await args.client.sourceFilesApi.withFetchAll().listProjectFiles(args.projectId, { directoryId: folder.id })
         ).data.map(e => e.data);
     }
     return { folder, files };
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.directories all directories
- * @param arguments.client crowdin client instance
- * @param arguments.projectId project id
- * @param arguments.directoryName directory name to find
- * @param arguments.parentDirectory parent directory
- * @returns found or created folder and files under it
- */
-export async function getOrCreateFolder({
-    directories,
-    client,
-    projectId,
-    directoryName,
-    parentDirectory,
-}: {
+interface GetOrCreateFolderArgs {
     directories: SourceFilesModel.Directory[];
     client: Crowdin;
     projectId: number;
     directoryName: string;
     parentDirectory?: SourceFilesModel.Directory;
-}): Promise<{ folder: SourceFilesModel.Directory; files: SourceFilesModel.File[]; created: boolean }> {
-    let { folder, files } = await getFolder({ directories, client, projectId, directoryName, parentDirectory });
+}
+
+function isGetOrCreateFolderArgs(
+    args: GetOrCreateFolderArgs | SourceFilesModel.Directory[],
+): args is GetOrCreateFolderArgs {
+    return !Array.isArray(args);
+}
+
+/**
+ *
+ * @param directories all directories
+ * @param crowdinClient crowdin client instance
+ * @param projectId project id
+ * @param directoryName directory name to find
+ * @param parentDirectory parent directory
+ * @returns found or created folder and files under it
+ */
+export async function getOrCreateFolder(
+    directories: SourceFilesModel.Directory[],
+    crowdinClient: Crowdin,
+    projectId: number,
+    directoryName: string,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<{ folder: SourceFilesModel.Directory; files: SourceFilesModel.File[]; created: boolean }>;
+
+export async function getOrCreateFolder(
+    args: GetFolderArgs,
+): Promise<{ folder: SourceFilesModel.Directory; files: SourceFilesModel.File[]; created: boolean }>;
+
+export async function getOrCreateFolder(
+    directoriesOrArgs: SourceFilesModel.Directory[] | GetOrCreateFolderArgs,
+    crowdinClient?: Crowdin,
+    projectId?: number,
+    directoryName?: string,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<{ folder: SourceFilesModel.Directory; files: SourceFilesModel.File[]; created: boolean }> {
+    let args: GetOrCreateFolderArgs;
+    if (isGetOrCreateFolderArgs(directoriesOrArgs)) {
+        args = directoriesOrArgs;
+    } else {
+        //@ts-ignore
+        args = { directories: directoriesOrArgs, client: crowdinClient, projectId, directoryName, parentDirectory };
+    }
+    let { folder, files } = await getFolder(args);
     let created = false;
     if (!folder) {
         created = true;
         folder = (
-            await client.sourceFilesApi.createDirectory(projectId, {
-                name: directoryName,
-                directoryId: parentDirectory ? parentDirectory.id : undefined,
+            await args.client.sourceFilesApi.createDirectory(args.projectId, {
+                name: args.directoryName,
+                directoryId: args.parentDirectory ? args.parentDirectory.id : undefined,
             })
         ).data;
         files = (
-            await client.sourceFilesApi.withFetchAll().listProjectFiles(projectId, { directoryId: folder.id })
+            await args.client.sourceFilesApi.withFetchAll().listProjectFiles(args.projectId, { directoryId: folder.id })
         ).data.map(e => e.data);
     }
     return { folder, files, created };
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.client crowdin client instance
- * @param arguments.projectId project id
- * @param arguments.fileId file id
- * @param arguments.language language id
- * @param arguments.fileName file name for upload storage request
- * @param arguments.fileContent file content
- * @param arguments.request extra request fields for upload translation request
- * @returns upload translation response
- */
-export async function uploadTranslations({
-    client,
-    projectId,
-    fileId,
-    language,
-    fileName,
-    fileContent,
-    request = {},
-}: {
+interface UploadTranslationsArgs {
     client: Crowdin;
     projectId: number;
     fileId: number;
     language: string;
     fileName: string;
     fileContent: any;
-    request: Omit<TranslationsModel.UploadTranslationRequest, 'fileId' | 'storageId'>;
-}): Promise<TranslationsModel.UploadTranslationResponse> {
-    const storage = await client.uploadStorageApi.addStorage(fileName, fileContent);
-    return (
-        await client.translationsApi.uploadTranslation(projectId, language, {
-            fileId,
-            storageId: storage.data.id,
-            ...request,
-        })
-    ).data;
+    request?: Omit<TranslationsModel.UploadTranslationRequest, 'fileId' | 'storageId'>;
+}
+
+function isUploadTranslationsArgs(args: UploadTranslationsArgs | Crowdin): args is UploadTranslationsArgs {
+    //@ts-ignore
+    return args.client && args.projectId;
 }
 
 /**
  *
- * @param arguments arguments
- * @param arguments.client crowdin client instance
- * @param arguments.projectId project id
- * @param arguments.directory directory name where files are located
- * @param arguments.fileEntities files information
- * @param arguments.parentDirectory parent directory
+ * @param crowdinClient crowdin client instance
+ * @param projectId project id
+ * @param fileId file id
+ * @param language language id
+ * @param fileName file name for upload storage request
+ * @param fileContent file content
+ * @param request extra request fields for upload translation request
+ * @returns upload translation response
  */
-export async function updateSourceFiles({
-    client,
-    projectId,
-    directory,
-    fileEntities,
-    parentDirectory,
-}: {
+export async function uploadTranslations(
+    crowdinClient: Crowdin,
+    projectId: number,
+    fileId: number,
+    language: string,
+    fileName: string,
+    fileContent: any,
+    request?: Omit<TranslationsModel.UploadTranslationRequest, 'fileId' | 'storageId'>,
+): Promise<TranslationsModel.UploadTranslationResponse>;
+
+export async function uploadTranslations(
+    args: UploadTranslationsArgs,
+): Promise<TranslationsModel.UploadTranslationResponse>;
+
+export async function uploadTranslations(
+    crowdinClientOrArgs: Crowdin | UploadTranslationsArgs,
+    projectId?: number,
+    fileId?: number,
+    language?: string,
+    fileName?: string,
+    fileContent?: any,
+    request?: Omit<TranslationsModel.UploadTranslationRequest, 'fileId' | 'storageId'>,
+): Promise<TranslationsModel.UploadTranslationResponse> {
+    let args: UploadTranslationsArgs;
+    if (isUploadTranslationsArgs(crowdinClientOrArgs)) {
+        args = crowdinClientOrArgs;
+    } else {
+        //@ts-ignore
+        args = { client: crowdinClientOrArgs, projectId, fileId, fileContent, fileName, language, request };
+    }
+    const storage = await args.client.uploadStorageApi.addStorage(args.fileName, args.fileContent);
+    return (
+        await args.client.translationsApi.uploadTranslation(args.projectId, args.language, {
+            fileId: args.fileId,
+            storageId: storage.data.id,
+            ...(args.request || {}),
+        })
+    ).data;
+}
+
+interface UpdateSourceFilesArgs {
     client: Crowdin;
     projectId: number;
     directory: string;
     fileEntities: FileEntity[];
     parentDirectory?: SourceFilesModel.Directory;
-}): Promise<void> {
-    const directories = await client.sourceFilesApi.withFetchAll().listProjectDirectories(projectId);
+}
+
+function isUpdateSourceFilesArgs(args: UpdateSourceFilesArgs | Crowdin): args is UpdateSourceFilesArgs {
+    //@ts-ignore
+    return args.client && args.projectId;
+}
+
+/**
+ *
+ * @param crowdinClient crowdin client instance
+ * @param projectId project id
+ * @param directory directory name where files are located
+ * @param fileEntities files information
+ * @param parentDirectory parent directory
+ */
+export async function updateSourceFiles(
+    crowdinClient: Crowdin,
+    projectId: number,
+    directory: string,
+    fileEntities: FileEntity[],
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void>;
+
+export async function updateSourceFiles(args: UpdateSourceFilesArgs): Promise<void>;
+
+export async function updateSourceFiles(
+    crowdinClientOrArgs: Crowdin | UpdateSourceFilesArgs,
+    projectId?: number,
+    directory?: string,
+    fileEntities?: FileEntity[],
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void> {
+    let args: UpdateSourceFilesArgs;
+    if (isUpdateSourceFilesArgs(crowdinClientOrArgs)) {
+        args = crowdinClientOrArgs;
+    } else {
+        //@ts-ignore
+        args = { client: crowdinClientOrArgs, projectId, directory, fileEntities, parentDirectory };
+    }
+    const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
 
     const { folder, files } = await getOrCreateFolder({
         directories: directories.data.map(d => d.data),
-        client,
-        projectId,
-        directoryName: directory,
-        parentDirectory,
+        client: args.client,
+        projectId: args.projectId,
+        directoryName: args.directory,
+        parentDirectory: args.parentDirectory,
     });
 
     await Promise.all(
-        fileEntities.map(
+        args.fileEntities.map(
             async fileEntity =>
                 await updateOrCreateFile({
-                    client,
-                    projectId,
+                    client: args.client,
+                    projectId: args.projectId,
                     name: fileEntity.name,
                     title: fileEntity.title,
                     type: fileEntity.type,
@@ -213,51 +344,79 @@ export async function updateSourceFiles({
     );
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.client crowdin client instance
- * @param arguments.projectId projecy id
- * @param arguments.directory directory name where source files are located
- * @param arguments.request request if file files and languages info
- * @param arguments.handleFn function that will be invoked for each translation file
- * @param arguments.parentDirectory parent directory
- */
-export async function handleTranslations({
-    client,
-    projectId,
-    directory,
-    request,
-    parentDirectory,
-    handleFn,
-}: {
+interface HandleTranslationsArgs {
     client: Crowdin;
     projectId: number;
     directory: string;
     request: TranslationsRequest;
     parentDirectory?: SourceFilesModel.Directory;
     handleFn: (translations: any, language: string, file: SourceFilesModel.File) => Promise<void>;
-}): Promise<void> {
-    const directories = await client.sourceFilesApi.withFetchAll().listProjectDirectories(projectId);
+}
+
+function isHandleTranslationsArgs(args: HandleTranslationsArgs | Crowdin): args is HandleTranslationsArgs {
+    //@ts-ignore
+    return args.client && args.projectId;
+}
+
+/**
+ *
+ * @param crowdinClient crowdin client instance
+ * @param projectId projecy id
+ * @param directory directory name where source files are located
+ * @param request request if file files and languages info
+ * @param handleFn function that will be invoked for each translation file
+ * @param parentDirectory parent directory
+ */
+export async function handleTranslations(
+    crowdinClient: Crowdin,
+    projectId: number,
+    directory: string,
+    request: TranslationsRequest,
+    handleFn: (translations: any, language: string, file: SourceFilesModel.File) => Promise<void>,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void>;
+
+export async function handleTranslations(args: HandleTranslationsArgs): Promise<void>;
+
+export async function handleTranslations(
+    crowdinClientOrArgs: Crowdin | HandleTranslationsArgs,
+    projectId?: number,
+    directory?: string,
+    request?: TranslationsRequest,
+    handleFn?: (translations: any, language: string, file: SourceFilesModel.File) => Promise<void>,
+    parentDirectory?: SourceFilesModel.Directory,
+): Promise<void> {
+    let args: HandleTranslationsArgs;
+    if (isHandleTranslationsArgs(crowdinClientOrArgs)) {
+        args = crowdinClientOrArgs;
+    } else {
+        //@ts-ignore
+        args = { client: crowdinClientOrArgs, projectId, directory, handleFn, request, parentDirectory };
+    }
+    const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
 
     const { files } = await getFolder({
         directories: directories.data.map(d => d.data),
-        client,
-        projectId,
-        directoryName: directory,
-        parentDirectory,
+        client: args.client,
+        projectId: args.projectId,
+        directoryName: args.directory,
+        parentDirectory: args.parentDirectory,
     });
 
-    for (const [fileId, targetLanguages] of Object.entries(request)) {
+    for (const [fileId, targetLanguages] of Object.entries(args.request)) {
         const file = files.find(f => f.id === parseInt(fileId));
         if (!file) {
             continue;
         }
         await Promise.all(
             targetLanguages.map(async languageCode => {
-                const translationsLink = await client.translationsApi.buildProjectFileTranslation(projectId, file.id, {
-                    targetLanguageId: languageCode,
-                });
+                const translationsLink = await args.client.translationsApi.buildProjectFileTranslation(
+                    args.projectId,
+                    file.id,
+                    {
+                        targetLanguageId: languageCode,
+                    },
+                );
 
                 if (!translationsLink) {
                     return;
@@ -265,7 +424,7 @@ export async function handleTranslations({
 
                 const response = await axios.get(translationsLink.data.url);
 
-                await handleFn(response.data, languageCode, file);
+                await args.handleFn(response.data, languageCode, file);
             }),
         );
     }
@@ -278,7 +437,6 @@ export class PaymentRequiredError extends Error {
         super('Payment required');
         this.subscribeLink = subscribeLink;
         this.initializedAt = initializedAt;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         //@ts-ignore
         this.code = 402;
     }
@@ -312,19 +470,14 @@ export async function getSubscription({
         });
         return response.data;
     } catch (e) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         //@ts-ignore
         if (e.response) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             //@ts-ignore
             if (e.response.status === 402) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 //@ts-ignore
                 throw new PaymentRequiredError(e.response.data?.subscribeLink, e.response.data?.initializedAt);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 //@ts-ignore
             } else if (e.response.data?.error?.message) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 //@ts-ignore
                 throw new Error(e.response.data.error.message);
             }
