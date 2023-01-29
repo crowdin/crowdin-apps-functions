@@ -1,30 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { AppToken, JwtPayload, Token } from './models';
 
 const crowdinAuthUrl = 'https://accounts.crowdin.com/oauth/token';
 
-/**
- *
- * @param arguments arguments
- * @param arguments.appId Crowdin app identifier
- * @param arguments.appSecret Crowdin app secret received from install event
- * @param arguments.clientId OAuth client id of the app
- * @param arguments.clientSecret OAuth client secret of the app
- * @param arguments.domain Crowdin organization domain
- * @param arguments.userId The user who installed the application
- * @param arguments.url Custom url for token exchange
- * @returns token object which is needed to establish communication between app and Crowdin API
- */
-export async function fetchAppToken({
-    appId,
-    appSecret,
-    clientId,
-    clientSecret,
-    domain,
-    userId,
-    url,
-}: {
+interface FetchAppTokenArgs {
     appId: string;
     appSecret: string;
     clientId: string;
@@ -32,15 +13,59 @@ export async function fetchAppToken({
     domain: string;
     userId: number;
     url?: string;
-}): Promise<AppToken> {
-    const token = await axios.post(url || crowdinAuthUrl, {
+}
+
+function isFetchAppTokenArgs(args: FetchAppTokenArgs | string): args is FetchAppTokenArgs {
+    return typeof args !== 'string';
+}
+
+/**
+ *
+ * @param appId Crowdin app identifier
+ * @param appSecret Crowdin app secret received from install event
+ * @param clientId OAuth client id of the app
+ * @param clientSecret OAuth client secret of the app
+ * @param domain Crowdin organization domain
+ * @param userId The user who installed the application
+ * @param url Custom url for token exchange
+ * @returns token object which is needed to establish communication between app and Crowdin API
+ */
+export async function fetchAppToken(
+    appId: string,
+    appSecret: string,
+    clientId: string,
+    clientSecret: string,
+    domain: string,
+    userId: number,
+    url?: string,
+): Promise<AppToken>;
+
+export async function fetchAppToken(args: FetchAppTokenArgs): Promise<AppToken>;
+
+export async function fetchAppToken(
+    appIdOrArgs: string | FetchAppTokenArgs,
+    appSecret?: string,
+    clientId?: string,
+    clientSecret?: string,
+    domain?: string,
+    userId?: number,
+    url?: string,
+): Promise<AppToken> {
+    let options: FetchAppTokenArgs;
+    if (isFetchAppTokenArgs(appIdOrArgs)) {
+        options = appIdOrArgs;
+    } else {
+        //@ts-ignore
+        options = { appId: appIdOrArgs, appSecret, clientId, clientSecret, domain, userId, url };
+    }
+    const token = await axios.post(options.url || crowdinAuthUrl, {
         grant_type: 'crowdin_app',
-        client_id: clientId,
-        client_secret: clientSecret,
-        app_id: appId,
-        app_secret: appSecret,
-        domain: domain,
-        user_id: userId,
+        client_id: options.clientId,
+        client_secret: options.clientSecret,
+        app_id: options.appId,
+        app_secret: options.appSecret,
+        domain: options.domain,
+        user_id: options.userId,
     });
 
     return {
@@ -49,31 +74,52 @@ export async function fetchAppToken({
     };
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.clientId OAuth client id of the app
- * @param arguments.clientSecret OAuth client secret of the app
- * @param arguments.code code used for authorization of your Crowdin app (returned in install event payload)
- * @param arguments.url Custom url for token exchange
- * @returns token object which is needed to establish communication between app and Crowdin API
- */
-export async function generateOAuthToken({
-    clientId,
-    clientSecret,
-    code,
-    url,
-}: {
+interface GenerateOAuthTokenArgs {
     clientId: string;
     clientSecret: string;
     code: string;
     url?: string;
-}): Promise<Token> {
-    const token = await axios.post(url || crowdinAuthUrl, {
+}
+
+function isGenerateOAuthTokenArgs(args: GenerateOAuthTokenArgs | string): args is GenerateOAuthTokenArgs {
+    return typeof args !== 'string';
+}
+
+/**
+ *
+ * @param clientId OAuth client id of the app
+ * @param clientSecret OAuth client secret of the app
+ * @param code code used for authorization of your Crowdin app (returned in install event payload)
+ * @param url Custom url for token exchange
+ * @returns token object which is needed to establish communication between app and Crowdin API
+ */
+export async function generateOAuthToken(
+    clientId: string,
+    clientSecret: string,
+    code: string,
+    url?: string,
+): Promise<Token>;
+
+export async function generateOAuthToken(args: GenerateOAuthTokenArgs): Promise<Token>;
+
+export async function generateOAuthToken(
+    clientIdOrArgs: string | GenerateOAuthTokenArgs,
+    clientSecret?: string,
+    code?: string,
+    url?: string,
+): Promise<Token> {
+    let options: GenerateOAuthTokenArgs;
+    if (isGenerateOAuthTokenArgs(clientIdOrArgs)) {
+        options = clientIdOrArgs;
+    } else {
+        //@ts-ignore
+        options = { clientId: clientIdOrArgs, clientSecret, code, url };
+    }
+    const token = await axios.post(options.url || crowdinAuthUrl, {
         grant_type: 'authorization_code',
-        client_id: clientId,
-        client_secret: clientSecret,
-        code,
+        client_id: options.clientId,
+        client_secret: options.clientSecret,
+        code: options.code,
     });
     return {
         accessToken: token.data.access_token,
@@ -82,31 +128,52 @@ export async function generateOAuthToken({
     };
 }
 
-/**
- *
- * @param arguments arguments
- * @param arguments.clientId OAuth client id of the app
- * @param arguments.clientSecret OAuth client secret of the app
- * @param arguments.refreshToken {@link Token#refreshToken}
- * @param arguments.url Custom url for token exchange
- * @returns updated token object
- */
-export async function refreshOAuthToken({
-    clientId,
-    clientSecret,
-    refreshToken,
-    url,
-}: {
+interface RefreshOAuthTokenArgs {
     clientId: string;
     clientSecret: string;
     refreshToken: string;
     url?: string;
-}): Promise<Token> {
-    const token = await axios.post(url || crowdinAuthUrl, {
+}
+
+function isRefreshOAuthTokenArgs(args: RefreshOAuthTokenArgs | string): args is RefreshOAuthTokenArgs {
+    return typeof args !== 'string';
+}
+
+/**
+ *
+ * @param clientId OAuth client id of the app
+ * @param clientSecret OAuth client secret of the app
+ * @param refreshToken {@link Token#refreshToken}
+ * @param url Custom url for token exchange
+ * @returns updated token object
+ */
+export async function refreshOAuthToken(
+    clientId: string,
+    clientSecret: string,
+    refreshToken: string,
+    url?: string,
+): Promise<Token>;
+
+export async function refreshOAuthToken(args: RefreshOAuthTokenArgs): Promise<Token>;
+
+export async function refreshOAuthToken(
+    clientIdOrArgs: string | RefreshOAuthTokenArgs,
+    clientSecret?: string,
+    refreshToken?: string,
+    url?: string,
+): Promise<Token> {
+    let options: RefreshOAuthTokenArgs;
+    if (isRefreshOAuthTokenArgs(clientIdOrArgs)) {
+        options = clientIdOrArgs;
+    } else {
+        //@ts-ignore
+        options = { clientId: clientIdOrArgs, clientSecret, refreshToken, url };
+    }
+    const token = await axios.post(options.url || crowdinAuthUrl, {
         grant_type: 'refresh_token',
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
+        client_id: options.clientId,
+        client_secret: options.clientSecret,
+        refresh_token: options.refreshToken,
     });
     return {
         accessToken: token.data.access_token,
