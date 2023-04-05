@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { AppToken, JwtPayload, Token } from './models';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const axios = require('../node_modules/axios/dist/node/axios.cjs');
 
 const crowdinAuthUrl = 'https://accounts.crowdin.com/oauth/token';
 

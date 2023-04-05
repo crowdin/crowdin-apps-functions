@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
-import axios from 'axios';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const axios = require('../node_modules/axios/dist/node/axios.cjs');
 
 interface UpdateOrCreateFileArgs {
     client: Crowdin;
@@ -463,6 +464,7 @@ export async function getSubscription({
         requestUrl = `https://crowdin.com/api/v2/applications/${appIdentifier}/subscription`;
     }
     try {
+        // @ts-ignore
         const response = await axios.get<Subscription>(requestUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
