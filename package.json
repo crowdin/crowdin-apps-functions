@@ -1,17 +1,17 @@
 {
   "name": "@crowdin/crowdin-apps-functions",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Utility library to easily and quickly develop Crowdin App",
   "main": "out/index.js",
   "types": "out/index.d.ts",
   "scripts": {
     "prepare": "husky install",
-    "test": "jest --config jestconfig.json",
+    "test": "jest",
     "build": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint --fix \"{src,tests}/**/*.{js,ts}\"",
     "lint-ci": "eslint \"{src,tests}/**/*.{js,ts}\"",
-    "test-coverage": "jest --config jestconfig.json --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html"
+    "test-coverage": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "husky": "^7.0.0",
     "jest": "^27.5.1",
     "jest-circus": "^27.0.0",
-    "jest-junit": "^12.0.0",
+    "jest-junit": "^15.0.0",
     "jest-ts-auto-mock": "^2.1.0",
     "lint-staged": ">=8",
     "prettier": "^1.18.2",
@@ -46,7 +46,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@crowdin/crowdin-api-client": "1.21.1",
+    "@crowdin/crowdin-api-client": "^1.22.1",
     "jsonwebtoken": "^9.0.0"
   },
   "bugs": {
