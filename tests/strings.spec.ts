@@ -119,6 +119,18 @@ describe('Convert singular', () => {
         expect(res).toBe('<x>word</x>');
     });
 
+    it('xlf source string multiple', () => {
+        const res = convertString(
+            {
+                placeholders: 'xlf',
+            },
+            {
+                text: 'First [%word]. Second [%word]',
+            },
+        );
+        expect(res).toBe('First <x>word</x>. Second <x>word</x>');
+    });
+
     it('mustache translation', () => {
         const res = convertString(
             {

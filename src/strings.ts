@@ -62,11 +62,11 @@ function convertPlaceholders(config: SerializationConfig, string: string): strin
     const regex = /\[%([^\]]+)]/gm;
 
     if (config.placeholders === 'mustache') {
-        return string.replaceAll(regex, '{$1}');
+        return string.replace(regex, '{$1}');
     }
 
     if (config.placeholders === 'xlf') {
-        return string.replaceAll(regex, '<x>$1</x>');
+        return string.replace(regex, '<x>$1</x>');
     }
 
     return string;
