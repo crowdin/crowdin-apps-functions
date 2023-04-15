@@ -87,6 +87,7 @@ Please refer to JSDoc for more details.
 | `uploadTranslations`               | adds file to storage and sends it in upload translation request |
 | `updateSourceFiles`                | updates source files under specific directory                   |
 | `handleTranslations`               | executes side effect function for each translated file          |
+| `createOrUpdateWebhook`            | create or update webhook                                        |
 | `getSubscription`                  | returns an information about app subscription                   |
 | `convertString`                    | converts source or translation according to specified config    |
 | `getBundleConfigurationForm`       | returns UI template config for custom formatters                |
