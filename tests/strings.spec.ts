@@ -16,7 +16,7 @@ describe('Convert plurals', () => {
                 },
             },
         );
-        expect(res).toBe('{key, plural,  one {<x>word</x>} other {<x>words</x>}}');
+        expect(res).toBe('{key, plural, one {<x>word</x>} other {<x>words</x>}}');
     });
 
     it('ICU mustache translation', () => {
@@ -39,7 +39,7 @@ describe('Convert plurals', () => {
             },
             'uk',
         );
-        expect(res).toBe('{key, plural,  one {{word}} other {{words}}}');
+        expect(res).toBe('{key, plural, one {{word}} other {{words}}}');
     });
 
     it('Concat xlf source string', () => {

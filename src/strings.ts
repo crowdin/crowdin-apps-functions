@@ -43,8 +43,8 @@ export function convertString(
 function serializeICU(config: SerializationConfig, identifier: string, string: StringText): string {
     if (config.plurals === 'icu') {
         const pluralFormsTranslations = Object.entries(string)
-            .map(([key, value]) => ` ${key} {${convertPlaceholders(config, value)}}`)
-            .join('');
+            .map(([key, value]) => `${key} {${convertPlaceholders(config, value)}}`)
+            .join(' ');
 
         return `{${identifier}, plural, ${pluralFormsTranslations}}`;
     }
