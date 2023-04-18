@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import Crowdin, { SourceFilesModel, TranslationsModel } from '@crowdin/crowdin-api-client';
+import Crowdin, { SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
 
 interface UpdateOrCreateFileArgs {
@@ -427,6 +427,83 @@ export async function handleTranslations(
                 await args.handleFn(response.data, languageCode, file);
             }),
         );
+    }
+}
+
+interface CreateOrUpdateWebhookArgs {
+    client: Crowdin;
+    projectId: number;
+    url: string;
+    events: WebhooksModel.Event[];
+    payload: any;
+    name: string;
+    requestType?: WebhooksModel.RequestType;
+    batchingEnabled?: boolean;
+    headers?: Record<string, string>;
+    contentType?: WebhooksModel.ContentType;
+    webhookId?: number;
+    webhookMatch?: (webhook: WebhooksModel.Webhook) => boolean;
+}
+
+/**
+ * Function to update or create webhook
+ *
+ * @returns updated or created webhook id
+ */
+export async function createOrUpdateWebhook(args: CreateOrUpdateWebhookArgs): Promise<number> {
+    const {
+        client,
+        projectId,
+        events,
+        name,
+        url,
+        payload,
+        requestType = 'POST',
+        batchingEnabled = true,
+        headers,
+        contentType,
+        webhookId,
+        webhookMatch,
+    } = args;
+    let id = webhookId;
+    if (webhookMatch) {
+        const webhooks = await client.webhooksApi.withFetchAll().listWebhooks(projectId);
+        const webhook = webhooks.data.find(e => webhookMatch(e.data));
+        if (webhook) {
+            id = webhook.data.id;
+        }
+    }
+    if (id) {
+        await client.webhooksApi.editWebhook(projectId, id, [
+            {
+                value: events,
+                op: 'replace',
+                path: '/events',
+            },
+            {
+                value: payload,
+                op: 'replace',
+                path: '/payload',
+            },
+            {
+                value: url,
+                op: 'replace',
+                path: '/url',
+            },
+        ]);
+        return id;
+    } else {
+        const newWebhook = await client.webhooksApi.addWebhook(projectId, {
+            name,
+            url,
+            events,
+            requestType,
+            payload,
+            batchingEnabled,
+            headers,
+            contentType,
+        });
+        return newWebhook.data.id;
     }
 }
 

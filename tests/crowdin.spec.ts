@@ -1,14 +1,17 @@
 import Crowdin, {
+    PatchRequest,
     ResponseList,
     ResponseObject,
     SourceFiles,
     SourceFilesModel,
     TranslationsModel,
     UploadStorageModel,
+    WebhooksModel,
 } from '@crowdin/crowdin-api-client';
 import { createMock } from 'ts-auto-mock';
 import {
     FileEntity,
+    createOrUpdateWebhook,
     getFolder,
     getOrCreateFolder,
     updateOrCreateFile,
@@ -399,6 +402,92 @@ describe('UploadTranslations function', () => {
             expect(spyFileName).toBe('fileName');
             expect(spyContentType).toBeUndefined();
             expect(spyRequestAddStorage).toBe('fileContent');
+        });
+    });
+});
+
+describe('CreateOrUpdateWebhook function', () => {
+    let client: Crowdin;
+    let spyProjectId: number;
+    let spyWebhookId: number;
+    let spyUpdateRequest: PatchRequest[];
+    let spyAddRequest: WebhooksModel.AddWebhookRequest;
+
+    beforeEach(() => {
+        client = createMock<Crowdin>({
+            webhooksApi: {
+                editWebhook: (
+                    projectId: number,
+                    webhookId: number,
+                    request: PatchRequest[],
+                ): Promise<ResponseObject<WebhooksModel.Webhook>> => {
+                    spyProjectId = projectId;
+                    spyUpdateRequest = request;
+                    spyWebhookId = webhookId;
+                    return createMock<Promise<ResponseObject<WebhooksModel.Webhook>>>();
+                },
+                addWebhook: (
+                    projectId: number,
+                    request: WebhooksModel.AddWebhookRequest,
+                ): Promise<ResponseObject<WebhooksModel.Webhook>> => {
+                    spyProjectId = projectId;
+                    spyAddRequest = request;
+                    return createMock<Promise<ResponseObject<WebhooksModel.Webhook>>>();
+                },
+            },
+        });
+    });
+
+    it('should create new webhook', async () => {
+        await createOrUpdateWebhook({
+            client,
+            projectId: 1,
+            name: 'name',
+            events: ['file.translated'],
+            payload: 'payload',
+            url: 'test.com',
+        }).then(result => {
+            expect(result).toBe(0);
+            expect(spyProjectId).toBe(1);
+            expect(spyAddRequest).toMatchObject({
+                name: 'name',
+                events: ['file.translated'],
+                payload: 'payload',
+                url: 'test.com',
+            });
+        });
+    });
+
+    it('should update existing webhook', async () => {
+        await createOrUpdateWebhook({
+            client,
+            projectId: 1,
+            name: 'name',
+            events: ['file.translated'],
+            payload: 'payload',
+            url: 'test.com',
+            webhookId: 123,
+        }).then(result => {
+            expect(result).toBe(123);
+            expect(spyProjectId).toBe(1);
+            expect(spyWebhookId).toBe(123);
+            expect(spyUpdateRequest).toEqual([
+                {
+                    value: ['file.translated'],
+                    op: 'replace',
+                    path: '/events',
+                },
+                {
+                    value: 'payload',
+                    op: 'replace',
+                    path: '/payload',
+                },
+                {
+                    value: 'test.com',
+                    op: 'replace',
+                    path: '/url',
+                },
+            ]);
         });
     });
 });
