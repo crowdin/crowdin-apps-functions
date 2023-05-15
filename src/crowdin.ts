@@ -65,6 +65,17 @@ export async function updateOrCreateFile(
         await options.client.sourceFilesApi.updateOrRestoreFile(options.projectId, options.file.id, {
             storageId: storageFile.data.id,
         });
+
+        if (options.title && options.title !== options.file.title) {
+            await options.client.sourceFilesApi.editFile(options.projectId, options.file.id, [
+                {
+                    value: options.title,
+                    op: 'replace',
+                    path: '/title',
+                },
+            ]);
+        }
+
         //@ts-ignore
         return options.file.id;
     } else {
