@@ -1,6 +1,6 @@
 {
   "name": "@crowdin/crowdin-apps-functions",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Utility library to easily and quickly develop Crowdin App",
   "main": "out/index.js",
   "types": "out/index.d.ts",
