@@ -13,6 +13,11 @@
     "lint-ci": "eslint \"{src,tests}/**/*.{js,ts}\"",
     "test-coverage": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html"
   },
+  "files": [
+    "out/**/*",
+    "LICENSE",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/crowdin/crowdin-apps-functions.git"
