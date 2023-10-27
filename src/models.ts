@@ -20,8 +20,11 @@ export interface JwtPayload {
 
 export interface JwtPayloadContext {
     project_id: number;
+    project_identifier?: string;
     organization_id: number;
+    organization_domain?: string;
     user_id: number;
+    user_login?: string;
 }
 
 export interface InstallEvent {
