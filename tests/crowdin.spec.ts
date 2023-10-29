@@ -8,6 +8,7 @@ import Crowdin, {
     UploadStorageModel,
     WebhooksModel,
 } from '@crowdin/crowdin-api-client';
+import axios from 'axios';
 import { createMock } from 'ts-auto-mock';
 import {
     FileEntity,
@@ -498,11 +499,14 @@ describe('generateReport function', () => {
     const projectId = 1;
     const reportId = '123';
     const reportUrl = 'report-url';
+    const reportBlob = 'some-data';
     const generateReportMock = jest.fn().mockImplementation(() => ({ data: { identifier: reportId } }));
     const checkReportStatustMock = jest.fn().mockImplementation(() => ({ data: { status: 'finished' } }));
     const downloadReportMock = jest.fn().mockImplementation(() => ({ data: { url: reportUrl } }));
+    const axiosGet = jest.fn().mockImplementation(() => ({ data: reportBlob }));
 
     beforeEach(() => {
+        jest.mock('axios');
         client = createMock<Crowdin>({
             reportsApi: {
                 generateReport: generateReportMock,
@@ -510,11 +514,11 @@ describe('generateReport function', () => {
                 downloadReport: downloadReportMock,
             },
         });
+        axios.get = axiosGet;
     });
 
     it('should generate report', async () => {
         const res = await generateReport({ client, projectId, request: { name: 'test', schema: {} } });
-        expect(res).toBeDefined();
-        expect(res?.url).toBe(reportUrl);
+        expect(res).toBe(reportBlob);
     });
 });
