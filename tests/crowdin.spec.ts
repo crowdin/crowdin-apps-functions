@@ -12,6 +12,7 @@ import { createMock } from 'ts-auto-mock';
 import {
     FileEntity,
     createOrUpdateWebhook,
+    generateReport,
     getFolder,
     getOrCreateFolder,
     updateOrCreateFile,
@@ -489,5 +490,31 @@ describe('CreateOrUpdateWebhook function', () => {
                 },
             ]);
         });
+    });
+});
+
+describe('generateReport function', () => {
+    let client: Crowdin;
+    const projectId = 1;
+    const reportId = '123';
+    const reportUrl = 'report-url';
+    const generateReportMock = jest.fn().mockImplementation(() => ({ data: { identifier: reportId } }));
+    const checkReportStatustMock = jest.fn().mockImplementation(() => ({ data: { status: 'finished' } }));
+    const downloadReportMock = jest.fn().mockImplementation(() => ({ data: { url: reportUrl } }));
+
+    beforeEach(() => {
+        client = createMock<Crowdin>({
+            reportsApi: {
+                generateReport: generateReportMock,
+                checkReportStatus: checkReportStatustMock,
+                downloadReport: downloadReportMock,
+            },
+        });
+    });
+
+    it('should generate report', async () => {
+        const res = await generateReport({ client, projectId, request: { name: 'test', schema: {} } });
+        expect(res).toBeDefined();
+        expect(res?.url).toBe(reportUrl);
     });
 });
