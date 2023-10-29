@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import Crowdin, { SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
+import Crowdin, { ReportsModel, SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
 
 interface UpdateOrCreateFileArgs {
@@ -571,6 +571,29 @@ export async function getSubscription({
             }
         }
         throw e;
+    }
+}
+
+export async function generateReport({
+    client,
+    projectId,
+    request,
+}: {
+    client: Crowdin;
+    projectId: number;
+    request: ReportsModel.GenerateReportRequest;
+}): Promise<any | undefined> {
+    const report = await client.reportsApi.generateReport(projectId, request);
+
+    while (true) {
+        const status = await client.reportsApi.checkReportStatus(projectId, report.data.identifier);
+
+        if (status.data.status === 'finished') {
+            const downloadRes = await client.reportsApi.downloadReport(projectId, report.data.identifier);
+
+            const reportBlob = await axios.get(downloadRes.data.url);
+            return reportBlob.data;
+        }
     }
 }
 
