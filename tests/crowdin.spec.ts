@@ -518,7 +518,7 @@ describe('generateReport function', () => {
     });
 
     it('should generate report', async () => {
-        const res = await generateReport({ client, projectId, request: { name: 'test', schema: {} } });
+        const res = await generateReport({ client, projectId, request: { name: 'costs-estimation', schema: {} } });
         expect(res).toBe(reportBlob);
     });
 });
