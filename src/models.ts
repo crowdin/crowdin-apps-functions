@@ -32,6 +32,7 @@ export interface InstallEvent {
     appSecret: string;
     clientId: string;
     userId: number;
+    agentId?: number;
     organizationId: number;
     domain?: string;
     baseUrl: string;
