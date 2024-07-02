@@ -5,6 +5,10 @@ import { AppToken, JwtPayload, Token } from './models';
 
 const crowdinAuthUrl = 'https://accounts.crowdin.com/oauth/token';
 
+/**
+ * Crowdin App Authentication
+ */
+
 interface FetchAppTokenArgs {
     appId: string;
     appSecret: string;
@@ -73,6 +77,36 @@ export async function fetchAppToken(
         expiresIn: +token.data.expires_in,
     };
 }
+
+/**
+ * Crowdin Agent Authentication
+ */
+
+interface FetchAgentTokenArgs extends FetchAppTokenArgs {
+    agentId: number;
+}
+
+export async function fetchAgentToken(args: FetchAgentTokenArgs): Promise<AppToken> {
+    const token = await axios.post(args.url || crowdinAuthUrl, {
+        grant_type: 'crowdin_agent',
+        client_id: args.clientId,
+        client_secret: args.clientSecret,
+        app_id: args.appId,
+        app_secret: args.appSecret,
+        domain: args.domain,
+        user_id: args.userId,
+        agent_id: args.agentId,
+    });
+
+    return {
+        accessToken: token.data.access_token,
+        expiresIn: +token.data.expires_in,
+    };
+}
+
+/**
+ * Crowdin OAuth App Authentication
+ */
 
 interface GenerateOAuthTokenArgs {
     clientId: string;
