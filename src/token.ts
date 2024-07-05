@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { AppToken, JwtPayload, Token } from './models';
@@ -59,7 +58,7 @@ export async function fetchAppToken(
     if (isFetchAppTokenArgs(appIdOrArgs)) {
         options = appIdOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         options = { appId: appIdOrArgs, appSecret, clientId, clientSecret, domain, userId, url };
     }
     const token = await axios.post(options.url || crowdinAuthUrl, {
@@ -146,7 +145,7 @@ export async function generateOAuthToken(
     if (isGenerateOAuthTokenArgs(clientIdOrArgs)) {
         options = clientIdOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         options = { clientId: clientIdOrArgs, clientSecret, code, url };
     }
     const token = await axios.post(options.url || crowdinAuthUrl, {
@@ -200,7 +199,7 @@ export async function refreshOAuthToken(
     if (isRefreshOAuthTokenArgs(clientIdOrArgs)) {
         options = clientIdOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         options = { clientId: clientIdOrArgs, clientSecret, refreshToken, url };
     }
     const token = await axios.post(options.url || crowdinAuthUrl, {

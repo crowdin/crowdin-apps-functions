@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Crowdin, { ReportsModel, SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
 
@@ -14,7 +13,7 @@ interface UpdateOrCreateFileArgs {
 }
 
 function isUpdateOrCreateFileArgs(arg: Crowdin | UpdateOrCreateFileArgs): arg is UpdateOrCreateFileArgs {
-    //@ts-ignore
+    // @ts-expect-error: Type guard property check
     return arg.client && arg.projectId;
 }
 
@@ -57,7 +56,7 @@ export async function updateOrCreateFile(
     if (isUpdateOrCreateFileArgs(clientOrArgs)) {
         options = clientOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         options = { client: clientOrArgs, projectId, name, title, type, directoryId, data, file };
     }
     const storageFile = await options.client.uploadStorageApi.addStorage(options.name, options.data);
@@ -76,7 +75,6 @@ export async function updateOrCreateFile(
             ]);
         }
 
-        //@ts-ignore
         return options.file.id;
     } else {
         const newFile = await options.client.sourceFilesApi.createFile(options.projectId, {
@@ -134,7 +132,7 @@ export async function getFolder(
     if (isGetFolderArgs(directoriesOrArgs)) {
         args = directoriesOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         args = { directories: directoriesOrArgs, client: crowdinClient, projectId, directoryName, parentDirectory };
     }
     const folder = args.directories.find(
@@ -197,7 +195,7 @@ export async function getOrCreateFolder(
     if (isGetOrCreateFolderArgs(directoriesOrArgs)) {
         args = directoriesOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         args = { directories: directoriesOrArgs, client: crowdinClient, projectId, directoryName, parentDirectory };
     }
     let { folder, files } = await getFolder(args);
@@ -228,7 +226,7 @@ interface UploadTranslationsArgs {
 }
 
 function isUploadTranslationsArgs(args: UploadTranslationsArgs | Crowdin): args is UploadTranslationsArgs {
-    //@ts-ignore
+    // @ts-expect-error: Type guard property check
     return args.client && args.projectId;
 }
 
@@ -270,7 +268,7 @@ export async function uploadTranslations(
     if (isUploadTranslationsArgs(crowdinClientOrArgs)) {
         args = crowdinClientOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         args = { client: crowdinClientOrArgs, projectId, fileId, fileContent, fileName, language, request };
     }
     const storage = await args.client.uploadStorageApi.addStorage(args.fileName, args.fileContent);
@@ -292,7 +290,7 @@ interface UpdateSourceFilesArgs {
 }
 
 function isUpdateSourceFilesArgs(args: UpdateSourceFilesArgs | Crowdin): args is UpdateSourceFilesArgs {
-    //@ts-ignore
+    // @ts-expect-error: Type guard property check
     return args.client && args.projectId;
 }
 
@@ -325,7 +323,7 @@ export async function updateSourceFiles(
     if (isUpdateSourceFilesArgs(crowdinClientOrArgs)) {
         args = crowdinClientOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         args = { client: crowdinClientOrArgs, projectId, directory, fileEntities, parentDirectory };
     }
     const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
@@ -365,7 +363,7 @@ interface HandleTranslationsArgs {
 }
 
 function isHandleTranslationsArgs(args: HandleTranslationsArgs | Crowdin): args is HandleTranslationsArgs {
-    //@ts-ignore
+    // @ts-expect-error: Type guard property check
     return args.client && args.projectId;
 }
 
@@ -401,7 +399,7 @@ export async function handleTranslations(
     if (isHandleTranslationsArgs(crowdinClientOrArgs)) {
         args = crowdinClientOrArgs;
     } else {
-        //@ts-ignore
+        // @ts-expect-error: Handling potential undefined value
         args = { client: crowdinClientOrArgs, projectId, directory, handleFn, request, parentDirectory };
     }
     const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
@@ -525,7 +523,7 @@ export class PaymentRequiredError extends Error {
         super('Payment required');
         this.subscribeLink = subscribeLink;
         this.initializedAt = initializedAt;
-        //@ts-ignore
+        // @ts-expect-error: Adding custom property
         this.code = 402;
     }
 }
@@ -557,16 +555,12 @@ export async function getSubscription({
             },
         });
         return response.data;
-    } catch (e) {
-        //@ts-ignore
+    } catch (error) {
+        const e = error as any;
         if (e.response) {
-            //@ts-ignore
             if (e.response.status === 402) {
-                //@ts-ignore
                 throw new PaymentRequiredError(e.response.data?.subscribeLink, e.response.data?.initializedAt);
-                //@ts-ignore
             } else if (e.response.data?.error?.message) {
-                //@ts-ignore
                 throw new Error(e.response.data.error.message);
             }
         }
