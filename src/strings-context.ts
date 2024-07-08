@@ -285,7 +285,6 @@ async function fetchScreenshots(
     strings: ExtendedStringNode[],
 ): Promise<AnnotatedScreenshot[]> {
     const stringIds = strings.map(str => str.id);
-    // @ts-expect-error: Waiting fo client update
     const screenshotsData = await client.screenshotsApi.withFetchAll().listScreenshots(projectId, {
         stringIds,
     });
