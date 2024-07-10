@@ -1,9 +1,15 @@
 import * as Jimp from 'jimp';
 
+/**
+ * Provides tools for adding annotations to images using the Jimp library.
+ * Capable of resizing images, drawing rectangles, and placing text labels with backgrounds.
+ */
 class ImageAnnotator {
     private static readonly FONT_SIZE = 12;
     private static readonly SHORT_SIDE_MAX_SIZE = 768;
     private static readonly LONG_SIDE_MAX_SIZE = 2048;
+    private static readonly AVERAGE_CHAR_WIDTH = ImageAnnotator.FONT_SIZE * 0.6;
+    private static readonly PADDING_PIXELS = 10;
 
     private image!: Jimp;
     private originalWidth!: number;
@@ -109,7 +115,10 @@ class ImageAnnotator {
         const textWidth = this.getTextWidth(text);
         const textHeight = ImageAnnotator.FONT_SIZE;
 
+        // Create a new background image with additional padding for text. The background extends 4 pixels beyond the text dimensions for padding.
         const background = new Jimp(textWidth + 4, textHeight + 4, this.backgroundColor);
+
+        // Position the background centered around the text coordinates, offset by 2 pixels to ensure text is centered within the background.
         this.image.composite(background, x - 2, y - 2, {
             mode: Jimp.BLEND_SOURCE_OVER,
             opacitySource: 0.75, // Adjust transparency here
@@ -137,18 +146,18 @@ class ImageAnnotator {
 
         // Adjust position if text goes beyond the right edge
         if (x + textWidth > this.imageWidth) {
-            x = this.imageWidth - textWidth - 10; // 10 pixels padding from the edge
+            x = this.imageWidth - textWidth - ImageAnnotator.PADDING_PIXELS; // 10 pixels padding from the edge
         }
 
         // Adjust position if text goes beyond the top edge
         if (y - textHeight < 0) {
             // Try placing text below the rectangle
-            y = rectY + rectHeight + textHeight + 10; // 10 pixels padding below the rectangle
+            y = rectY + rectHeight + textHeight + ImageAnnotator.PADDING_PIXELS; // 10 pixels padding below the rectangle
         }
 
         // Adjust position if text goes beyond the bottom edge
         if (y + textHeight > this.imageHeight) {
-            y = this.imageHeight - textHeight - 10; // 10 pixels padding from the bottom
+            y = this.imageHeight - textHeight - ImageAnnotator.PADDING_PIXELS; // 10 pixels padding from the bottom
         }
 
         return [x, y];
@@ -156,8 +165,7 @@ class ImageAnnotator {
 
     private getTextWidth(text: string): number {
         // Approximate average width of a character in the font being used
-        const averageCharWidth = ImageAnnotator.FONT_SIZE * 0.6;
-        return text.length * averageCharWidth;
+        return text.length * ImageAnnotator.AVERAGE_CHAR_WIDTH;
     }
 }
 

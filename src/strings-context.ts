@@ -59,7 +59,24 @@ interface GetStringsContextResult {
     glossaryTerms?: GlossariesModel.ConcordanceSearchResponse[];
 }
 
-function buildQuery(additionalNodes: AdditionalNodes, getProjectData = true): string {
+interface FetchTranslationGlossaryFetchArgs {
+    client: Crowdin;
+    projectId: number;
+    expressions: string[];
+    sourceLanguageId: string;
+    targetLanguagesIds: string[];
+}
+
+interface FetchScreenshotsArgs {
+    client: Crowdin;
+    projectId: number;
+    strings: ExtendedStringNode[];
+}
+
+/**
+ * Constructs a GraphQL query to fetch project strings and optionally translations and detailed project data.
+ */
+function prepareProjectDataQuery(additionalNodes: AdditionalNodes, getProjectData = true): string {
     return `
     query (
         $projectId: Int!
@@ -220,13 +237,13 @@ function buildQuery(additionalNodes: AdditionalNodes, getProjectData = true): st
     `;
 }
 
-async function fetchTranslationMemory(
-    client: Crowdin,
-    projectId: number,
-    expressions: string[],
-    sourceLanguageId: string,
-    targetLanguagesIds: string[],
-): Promise<TranslationMemorySuggestion[]> {
+async function fetchTranslationMemory({
+    client,
+    projectId,
+    expressions,
+    sourceLanguageId,
+    targetLanguagesIds,
+}: FetchTranslationGlossaryFetchArgs): Promise<TranslationMemorySuggestion[]> {
     const tmSuggestions: TranslationMemorySuggestion[] = [];
 
     for (const targetLanguageId of targetLanguagesIds) {
@@ -251,13 +268,13 @@ async function fetchTranslationMemory(
     return tmSuggestions;
 }
 
-async function fetchGlossaryTerms(
-    client: Crowdin,
-    projectId: number,
-    expressions: string[],
-    sourceLanguageId: string,
-    targetLanguagesIds: string[],
-): Promise<GlossariesModel.ConcordanceSearchResponse[]> {
+async function fetchGlossaryTerms({
+    client,
+    projectId,
+    expressions,
+    sourceLanguageId,
+    targetLanguagesIds,
+}: FetchTranslationGlossaryFetchArgs): Promise<GlossariesModel.ConcordanceSearchResponse[]> {
     const glossaryTerms: GlossariesModel.ConcordanceSearchResponse[] = [];
 
     for (const targetLanguageId of targetLanguagesIds) {
@@ -279,11 +296,7 @@ async function fetchGlossaryTerms(
     return Object.values(glossaryTerms);
 }
 
-async function fetchScreenshots(
-    client: Crowdin,
-    projectId: number,
-    strings: ExtendedStringNode[],
-): Promise<AnnotatedScreenshot[]> {
+async function fetchScreenshots({ client, projectId, strings }: FetchScreenshotsArgs): Promise<AnnotatedScreenshot[]> {
     const stringIds = strings.map(str => str.id);
     const screenshotsData = await client.screenshotsApi.withFetchAll().listScreenshots(projectId, {
         stringIds,
@@ -348,7 +361,7 @@ export async function getStringsContext(args: StringsContextArgs): Promise<GetSt
     let project: Partial<ProjectsGroupsModel.Project> = {};
     let strings: ExtendedStringNode[] = [];
     const totalRequests = Math.ceil(stringIds.length / stringsLimit);
-    const query = buildQuery(additionalNodes);
+    const query = prepareProjectDataQuery(additionalNodes);
 
     for (let i = 0; i < totalRequests; i++) {
         const start = i * stringsLimit;
@@ -392,28 +405,34 @@ export async function getStringsContext(args: StringsContextArgs): Promise<GetSt
     }
 
     const sourceLanguageId = project.sourceLanguage?.id || 'en';
-    const stringTexts: string[] = strings.map(string => string.text as string);
+    const expressions: string[] = strings.map(string => string.text as string);
 
     let tmSuggestions: TranslationMemorySuggestion[] = [];
     let glossaryTerms: GlossariesModel.ConcordanceSearchResponse[] = [];
     let screenshots: AnnotatedScreenshot[] = [];
 
     if (additionalNodes.tmSuggestions && strings.length > 0) {
-        tmSuggestions = await fetchTranslationMemory(
+        tmSuggestions = await fetchTranslationMemory({
             client,
             projectId,
-            stringTexts,
+            expressions,
             sourceLanguageId,
             targetLanguagesIds,
-        );
+        });
     }
 
     if (additionalNodes.glossaryTerms && strings.length > 0) {
-        glossaryTerms = await fetchGlossaryTerms(client, projectId, stringTexts, sourceLanguageId, targetLanguagesIds);
+        glossaryTerms = await fetchGlossaryTerms({
+            client,
+            projectId,
+            expressions,
+            sourceLanguageId,
+            targetLanguagesIds,
+        });
     }
 
     if (additionalNodes.screenshots && strings.length > 0) {
-        screenshots = await fetchScreenshots(client, projectId, strings);
+        screenshots = await fetchScreenshots({ client, projectId, strings });
     }
 
     return {
