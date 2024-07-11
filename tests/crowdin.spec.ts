@@ -129,8 +129,6 @@ describe('GetFolder function', () => {
                             return new Promise<ResponseList<SourceFilesModel.Directory>>(resolve => {
                                 resolve(
                                     createMock<ResponseList<SourceFilesModel.Directory>>({
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                                        // @ts-ignore
                                         data: [
                                             createMock<ResponseObject<SourceFilesModel.Directory>>({
                                                 data: directory,
@@ -151,11 +149,7 @@ describe('GetFolder function', () => {
                             resolve(
                                 createMock<ResponseList<SourceFilesModel.File>>({
                                     data: [
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                                        // @ts-ignore
                                         createMock<ResponseObject<SourceFilesModel.File>>({
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                                            // @ts-ignore
                                             data: file,
                                         }),
                                     ],
