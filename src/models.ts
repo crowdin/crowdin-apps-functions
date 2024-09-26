@@ -13,6 +13,7 @@ export interface JwtPayload {
     aud: string;
     sub: string;
     domain?: string;
+    module?: string;
     context: JwtPayloadContext;
     iat: number;
     exp: number;
