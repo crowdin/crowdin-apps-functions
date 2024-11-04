@@ -512,7 +512,7 @@ describe('generateReport function', () => {
     });
 
     it('should generate report', async () => {
-        const res = await generateReport({ client, projectId, request: { name: 'costs-estimation', schema: {} } });
+        const res = await generateReport({ client, projectId, request: { name: 'costs-estimation-pe', schema: {} } });
         expect(res).toBe(reportBlob);
     });
 });
