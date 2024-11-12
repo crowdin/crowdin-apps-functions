@@ -42,6 +42,7 @@ export interface InstallEvent {
 
 export interface UninstallEvent {
     appId: string;
+    appSecret: string;
     clientId: string;
     organizationId: number;
     domain?: string;
