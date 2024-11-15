@@ -228,7 +228,16 @@ export function constructCrowdinIdFromJwtPayload(jwtPayload: JwtPayload): string
 
 /**
  *
- * @param crowdinId crowdin id (from {@link constructCrowdinIdFromJwtPayload})
+ * @param jwtPayload jwt token payload
+ * @returns unique identifier for integration ap of crowdin user and project context
+ */
+export function constructIntegrationCrowdinIdFromJwtPayload(jwtPayload: JwtPayload): string {
+    return `${jwtPayload.domain || jwtPayload.context.organization_id}__${jwtPayload.context.project_id}`;
+}
+
+/**
+ *
+ * @param crowdinId crowdin id (from {@link constructCrowdinIdFromJwtPayload} or {@link constructIntegrationCrowdinIdFromJwtPayload})
  * @returns crowdin project id
  */
 export function getProjectId(crowdinId: string): number {
