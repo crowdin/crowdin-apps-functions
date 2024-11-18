@@ -87,6 +87,7 @@ Please refer to JSDoc for more details.
 | `refreshOAuthToken`                | refresh OAuth token in case if it was expired                   |
 | `constructCrowdinIdFromJwtPayload` | creates unique id of crowdin user and project from the context  |
 | `getProjectId`                     | extracts project id from crowdin id                             |
+| `getUserId`                        | extracts user id from crowdin id                                |
 | `validateJwtToken`                 | validates if jwt token for your app is valid                    |
 | `updateOrCreateFile`               | create or update file in Crowdin                                |
 | `getFolder`                        | get folder with and files under it                              |
