@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { constructCrowdinIdFromJwtPayload, getProjectId, getUserId, JwtPayload, validateJwtToken } from '../src';
+import { constructCrowdinIdFromJwtPayload, getProjectId, parseCrowdinId, JwtPayload, validateJwtToken } from '../src';
 
 describe('Token-based functions', () => {
     const jwtPayload: JwtPayload = {
@@ -61,9 +61,11 @@ describe('Token-based functions', () => {
         expect(projectId).toStrictEqual(jwtPayload.context.project_id);
     });
 
-    it('getUserId', () => {
+    it('parseCrowdinId', () => {
         const crowdinId = constructCrowdinIdFromJwtPayload(jwtPayload);
-        const userId = getUserId(crowdinId);
+        const { organization, projectId, userId } = parseCrowdinId(crowdinId);
+        expect(+organization).toStrictEqual(jwtPayload.context.organization_id);
+        expect(projectId).toStrictEqual(jwtPayload.context.project_id);
         expect(userId).toStrictEqual(jwtPayload.context.user_id);
     });
 });

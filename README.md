@@ -79,27 +79,27 @@ crowdinFunctions.generateOAuthToken({ clientId: 'app_client_id', clientSecret: '
 Mainly all functions are intended to help you quickly develop your app but they also can reduce some work when you are integrating with Crowdin API.
 Please refer to JSDoc for more details.
 
-| Method name                        | Description                                                     |
-|------------------------------------|-----------------------------------------------------------------|
-| `fetchAppToken`                    | fetch API token for communication with Crowdin API              |
-| `fetchAgentToken`                  | fetch Agent API token for communication with Crowdin API        |
-| `generateOAuthToken`               | generates OAuth token for communication with Crowdin API        |
-| `refreshOAuthToken`                | refresh OAuth token in case if it was expired                   |
-| `constructCrowdinIdFromJwtPayload` | creates unique id of crowdin user and project from the context  |
-| `getProjectId`                     | extracts project id from crowdin id                             |
-| `getUserId`                        | extracts user id from crowdin id                                |
-| `validateJwtToken`                 | validates if jwt token for your app is valid                    |
-| `updateOrCreateFile`               | create or update file in Crowdin                                |
-| `getFolder`                        | get folder with and files under it                              |
-| `getOrCreateFolder`                | get folder with files under it or create it                     |
-| `uploadTranslations`               | adds file to storage and sends it in upload translation request |
-| `updateSourceFiles`                | updates source files under specific directory                   |
-| `handleTranslations`               | executes side effect function for each translated file          |
-| `createOrUpdateWebhook`            | create or update webhook                                        |
-| `getSubscription`                  | returns an information about app subscription                   |
-| `convertString`                    | converts source or translation according to specified config    |
-| `getBundleConfigurationForm`       | returns UI template config for custom formatters                |
-| `generateReport`                   | generates Crowdin report, covers check if finished              |
+| Method name                        | Description                                                           |
+|------------------------------------|-----------------------------------------------------------------------|
+| `fetchAppToken`                    | fetch API token for communication with Crowdin API                    |
+| `fetchAgentToken`                  | fetch Agent API token for communication with Crowdin API              |
+| `generateOAuthToken`               | generates OAuth token for communication with Crowdin API              |
+| `refreshOAuthToken`                | refresh OAuth token in case if it was expired                         |
+| `constructCrowdinIdFromJwtPayload` | creates unique id of crowdin user and project from the context        |
+| `getProjectId`                     | extracts project id from crowdin id                                   |
+| `parseCrowdinId`                   | extracts object with organization(id\|domain), project id and user id |
+| `validateJwtToken`                 | validates if jwt token for your app is valid                          |
+| `updateOrCreateFile`               | create or update file in Crowdin                                      |
+| `getFolder`                        | get folder with and files under it                                    |
+| `getOrCreateFolder`                | get folder with files under it or create it                           |
+| `uploadTranslations`               | adds file to storage and sends it in upload translation request       |
+| `updateSourceFiles`                | updates source files under specific directory                         |
+| `handleTranslations`               | executes side effect function for each translated file                |
+| `createOrUpdateWebhook`            | create or update webhook                                              |
+| `getSubscription`                  | returns an information about app subscription                         |
+| `convertString`                    | converts source or translation according to specified config          |
+| `getBundleConfigurationForm`       | returns UI template config for custom formatters                      |
+| `generateReport`                   | generates Crowdin report, covers check if finished                    |
 
 Also please have a look to working example of the [Crowdin App](https://github.com/crowdin/create-crowdin-app). It can be used as a basis for your app.
 

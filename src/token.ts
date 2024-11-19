@@ -238,10 +238,16 @@ export function getProjectId(crowdinId: string): number {
 /**
  *
  * @param crowdinId crowdin id (from {@link constructCrowdinIdFromJwtPayload})
- * @returns crowdin user id
+ * @returns object with organization(id|domain), project id and user id
  */
-export function getUserId(crowdinId: string): number {
-    return Number(crowdinId.split('__')[2]);
+export function parseCrowdinId(crowdinId: string): { organization: string; projectId: number; userId: number } {
+    const crowdinIdParts = crowdinId.split('__');
+
+    return {
+        organization: crowdinIdParts[0],
+        projectId: Number(crowdinIdParts[1]),
+        userId: Number(crowdinIdParts[2]),
+    };
 }
 
 /**
