@@ -1,10 +1,10 @@
 import * as jwt from 'jsonwebtoken';
-import { constructCrowdinIdFromJwtPayload, getProjectId, JwtPayload, validateJwtToken } from '../src';
+import { constructCrowdinIdFromJwtPayload, getProjectId, parseCrowdinId, JwtPayload, validateJwtToken } from '../src';
 
 describe('Token-based functions', () => {
     const jwtPayload: JwtPayload = {
         aud: 'test',
-        sub: 'test',
+        sub: '3',
         iat: 1,
         exp: Math.floor(Date.now() / 1000) + 60 * 60,
         context: {
@@ -17,18 +17,18 @@ describe('Token-based functions', () => {
     it('constructCrowdinIdFromJwtPayload', () => {
         const jwtPayload2: JwtPayload = {
             aud: 'test',
-            sub: 'testNew',
+            sub: '4',
             iat: 1,
             exp: 1,
             context: {
                 organization_id: 1,
                 project_id: 2,
-                user_id: 3,
+                user_id: 4,
             },
         };
         const jwtPayload3: JwtPayload = {
             aud: 'test',
-            sub: 'test',
+            sub: '3',
             iat: 1,
             exp: 1,
             context: {
@@ -59,5 +59,13 @@ describe('Token-based functions', () => {
         const crowdinId = constructCrowdinIdFromJwtPayload(jwtPayload);
         const projectId = getProjectId(crowdinId);
         expect(projectId).toStrictEqual(jwtPayload.context.project_id);
+    });
+
+    it('parseCrowdinId', () => {
+        const crowdinId = constructCrowdinIdFromJwtPayload(jwtPayload);
+        const { organization, projectId, userId } = parseCrowdinId(crowdinId);
+        expect(+organization).toStrictEqual(jwtPayload.context.organization_id);
+        expect(projectId).toStrictEqual(jwtPayload.context.project_id);
+        expect(userId).toStrictEqual(jwtPayload.context.user_id);
     });
 });
