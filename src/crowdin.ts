@@ -1,5 +1,6 @@
 import Crowdin, { ReportsModel, SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
 import axios from 'axios';
+import { PatchRequest } from '@crowdin/crowdin-api-client/out/core';
 
 interface UpdateOrCreateFileArgs {
     client: Crowdin;
@@ -10,6 +11,7 @@ interface UpdateOrCreateFileArgs {
     directoryId?: number;
     data: any;
     file?: SourceFilesModel.File;
+    excludedTargetLanguages?: string[];
 }
 
 function isUpdateOrCreateFileArgs(arg: Crowdin | UpdateOrCreateFileArgs): arg is UpdateOrCreateFileArgs {
@@ -27,6 +29,7 @@ function isUpdateOrCreateFileArgs(arg: Crowdin | UpdateOrCreateFileArgs): arg is
  * @param directoryId directory id
  * @param data file data
  * @param file file object
+ * @param excludedTargetLanguages languages to be excluded from translation
  * @returns id of newly created or existing file id
  */
 export async function updateOrCreateFile(
@@ -38,6 +41,7 @@ export async function updateOrCreateFile(
     directoryId: number,
     data: any,
     file?: SourceFilesModel.File,
+    excludedTargetLanguages?: string[],
 ): Promise<number>;
 
 export async function updateOrCreateFile(args: UpdateOrCreateFileArgs): Promise<number>;
@@ -51,13 +55,25 @@ export async function updateOrCreateFile(
     directoryId?: number,
     data?: any,
     file?: SourceFilesModel.File,
+    excludedTargetLanguages?: string[],
 ): Promise<number> {
     let options: UpdateOrCreateFileArgs;
     if (isUpdateOrCreateFileArgs(clientOrArgs)) {
         options = clientOrArgs;
     } else {
-        // @ts-expect-error: Handling potential undefined value
-        options = { client: clientOrArgs, projectId, name, title, type, directoryId, data, file };
+        options = {
+            client: clientOrArgs,
+            // @ts-expect-error: Handling potential undefined value
+            projectId,
+            // @ts-expect-error: Handling potential undefined value
+            name,
+            title,
+            type,
+            directoryId,
+            data,
+            file,
+            excludedTargetLanguages,
+        };
     }
     const storageFile = await options.client.uploadStorageApi.addStorage(options.name, options.data);
     if (options.file) {
@@ -65,14 +81,26 @@ export async function updateOrCreateFile(
             storageId: storageFile.data.id,
         });
 
+        const updates: PatchRequest[] = [];
+
         if (options.title && options.title !== options.file.title) {
-            await options.client.sourceFilesApi.editFile(options.projectId, options.file.id, [
-                {
-                    value: options.title,
-                    op: 'replace',
-                    path: '/title',
-                },
-            ]);
+            updates.push({
+                value: options.title,
+                op: 'replace',
+                path: '/title',
+            });
+        }
+
+        if (options.excludedTargetLanguages) {
+            updates.push({
+                value: options.excludedTargetLanguages,
+                op: 'replace',
+                path: '/excludedTargetLanguages',
+            });
+        }
+
+        if (updates.length > 0) {
+            await options.client.sourceFilesApi.editFile(options.projectId, options.file.id, updates);
         }
 
         return options.file.id;
@@ -83,7 +111,9 @@ export async function updateOrCreateFile(
             title: options.title,
             type: options.type,
             directoryId: options.directoryId,
+            excludedTargetLanguages: options.excludedTargetLanguages,
         });
+
         return newFile.data.id;
     }
 }
