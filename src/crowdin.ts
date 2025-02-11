@@ -1,6 +1,11 @@
-import Crowdin, { ReportsModel, SourceFilesModel, TranslationsModel, WebhooksModel } from '@crowdin/crowdin-api-client';
+import Crowdin, {
+    ReportsModel,
+    SourceFilesModel,
+    TranslationsModel,
+    WebhooksModel,
+    PatchRequest,
+} from '@crowdin/crowdin-api-client';
 import axios from 'axios';
-import { PatchRequest } from '@crowdin/crowdin-api-client/out/core';
 
 interface UpdateOrCreateFileArgs {
     client: Crowdin;
