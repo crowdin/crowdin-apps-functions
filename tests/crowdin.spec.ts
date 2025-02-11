@@ -74,6 +74,7 @@ describe('UpdateOrCreateFile function', () => {
                 title: 'title',
                 directoryId: 2,
                 type: undefined,
+                excludedTargetLanguages: undefined,
             });
         });
     });
