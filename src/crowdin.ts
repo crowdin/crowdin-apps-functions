@@ -17,6 +17,7 @@ interface UpdateOrCreateFileArgs {
     data: any;
     file?: SourceFilesModel.File;
     excludedTargetLanguages?: string[];
+    importOptions?: SourceFilesModel.ImportOptions;
 }
 
 function isUpdateOrCreateFileArgs(arg: Crowdin | UpdateOrCreateFileArgs): arg is UpdateOrCreateFileArgs {
@@ -61,6 +62,7 @@ export async function updateOrCreateFile(
     data?: any,
     file?: SourceFilesModel.File,
     excludedTargetLanguages?: string[],
+    importOptions?: SourceFilesModel.ImportOptions,
 ): Promise<number> {
     let options: UpdateOrCreateFileArgs;
     if (isUpdateOrCreateFileArgs(clientOrArgs)) {
@@ -78,12 +80,14 @@ export async function updateOrCreateFile(
             data,
             file,
             excludedTargetLanguages,
+            importOptions,
         };
     }
     const storageFile = await options.client.uploadStorageApi.addStorage(options.name, options.data);
     if (options.file) {
         await options.client.sourceFilesApi.updateOrRestoreFile(options.projectId, options.file.id, {
             storageId: storageFile.data.id,
+            ...(options.importOptions && { importOptions: options.importOptions }),
         });
 
         const updates: PatchRequest[] = [];
@@ -117,6 +121,7 @@ export async function updateOrCreateFile(
             type: options.type,
             directoryId: options.directoryId,
             excludedTargetLanguages: options.excludedTargetLanguages,
+            importOptions: options.importOptions,
         });
 
         return newFile.data.id;
