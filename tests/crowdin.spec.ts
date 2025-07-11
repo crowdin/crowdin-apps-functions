@@ -65,6 +65,9 @@ describe('UpdateOrCreateFile function', () => {
             title: 'title',
             data: 'auto',
             directoryId: 2,
+            importOptions: {
+                contentSegmentation: false,
+            },
         }).then(result => {
             expect(result).toBe(0);
             expect(spyProjectId).toBe(1);
@@ -75,6 +78,9 @@ describe('UpdateOrCreateFile function', () => {
                 directoryId: 2,
                 type: undefined,
                 excludedTargetLanguages: undefined,
+                importOptions: {
+                    contentSegmentation: false,
+                },
             });
         });
     });
