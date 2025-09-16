@@ -6,6 +6,7 @@
         "outDir": "./out",
         "lib": [
             "es2021",
+            "dom"
         ],
         "strict": true,
         "plugins": [
