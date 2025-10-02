@@ -17,6 +17,7 @@ export interface JwtPayload {
     context: JwtPayloadContext;
     iat: number;
     exp: number;
+    code?: string;
 }
 
 export interface JwtPayloadContext {

@@ -103,6 +103,28 @@ export async function fetchAgentToken(args: FetchAgentTokenArgs): Promise<AppTok
     };
 }
 
+interface FetchAppWithCodeTokenArgs extends FetchAppTokenArgs {
+    code: string;
+}
+
+export async function fetchAppWithCodeToken(args: FetchAppWithCodeTokenArgs): Promise<AppToken> {
+    const token = await axios.post(args.url || crowdinAuthUrl, {
+        grant_type: 'crowdin_app_with_code',
+        client_id: args.clientId,
+        client_secret: args.clientSecret,
+        app_id: args.appId,
+        app_secret: args.appSecret,
+        domain: args.domain,
+        user_id: args.userId,
+        code: args.code,
+    });
+
+    return {
+        accessToken: token.data.access_token,
+        expiresIn: +token.data.expires_in,
+    };
+}
+
 /**
  * Crowdin OAuth App Authentication
  */
