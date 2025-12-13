@@ -84,13 +84,13 @@ class ImageAnnotator {
         return [downsizedWidth, downsizedHeight];
     }
 
-    private adjustTrackCoordinates(track: {
+    private adjustTrackCoordinates(track: { x: number; y: number; w: number; h: number; text: string }): {
         x: number;
         y: number;
         w: number;
         h: number;
         text: string;
-    }): { x: number; y: number; w: number; h: number; text: string } {
+    } {
         const scaleX = this.imageWidth / this.originalWidth;
         const scaleY = this.imageHeight / this.originalHeight;
 

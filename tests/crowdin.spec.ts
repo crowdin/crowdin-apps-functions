@@ -68,7 +68,7 @@ describe('UpdateOrCreateFile function', () => {
             importOptions: {
                 contentSegmentation: false,
             },
-        }).then(result => {
+        }).then((result) => {
             expect(result).toBe(0);
             expect(spyProjectId).toBe(1);
             expect(spyRequest).toStrictEqual({
@@ -98,7 +98,7 @@ describe('UpdateOrCreateFile function', () => {
             data: 'auto',
             directoryId: 2,
             file,
-        }).then(result => {
+        }).then((result) => {
             expect(result).toBe(3);
             expect(spyProjectId).toBe(1);
             expect(spyFileId).toBe(3);
@@ -133,7 +133,7 @@ describe('GetFolder function', () => {
                             projectId: number,
                         ): Promise<ResponseList<SourceFilesModel.Directory>> => {
                             spyProjectId = projectId;
-                            return new Promise<ResponseList<SourceFilesModel.Directory>>(resolve => {
+                            return new Promise<ResponseList<SourceFilesModel.Directory>>((resolve) => {
                                 resolve(
                                     createMock<ResponseList<SourceFilesModel.Directory>>({
                                         data: [
@@ -152,7 +152,7 @@ describe('GetFolder function', () => {
                     ): Promise<ResponseList<SourceFilesModel.File>> => {
                         spyProjectId = projectId;
                         spyOptions = options;
-                        return new Promise<ResponseList<SourceFilesModel.File>>(resolve => {
+                        return new Promise<ResponseList<SourceFilesModel.File>>((resolve) => {
                             resolve(
                                 createMock<ResponseList<SourceFilesModel.File>>({
                                     data: [
@@ -173,7 +173,7 @@ describe('GetFolder function', () => {
                 ): Promise<ResponseObject<SourceFilesModel.Directory>> => {
                     spyProjectId = projectId;
                     spyRequest = request;
-                    return new Promise<ResponseObject<SourceFilesModel.Directory>>(resolve => {
+                    return new Promise<ResponseObject<SourceFilesModel.Directory>>((resolve) => {
                         resolve(
                             createMock<ResponseObject<SourceFilesModel.Directory>>({
                                 data: createMock<SourceFilesModel.Directory>({
@@ -211,7 +211,7 @@ describe('GetFolder function', () => {
             client,
             projectId: 1,
             directoryName: folder.name,
-        }).then(result => {
+        }).then((result) => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
             expect(spyMaxLimit).toBe(undefined);
             expect(spyProjectId).toBe(1);
@@ -233,7 +233,7 @@ describe('GetFolder function', () => {
             projectId: 1,
             directoryName: folder.name,
             parentDirectory: parentFolder,
-        }).then(result => {
+        }).then((result) => {
             expect(result).toStrictEqual({ files: [file], folder: folder });
             expect(spyMaxLimit).toBe(undefined);
             expect(spyProjectId).toBe(1);
@@ -256,7 +256,7 @@ describe('GetFolder function', () => {
                 projectId: 1,
                 directoryName: folder.name,
                 parentDirectory: parentFolder,
-            }).then(result => {
+            }).then((result) => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: false });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -281,7 +281,7 @@ describe('GetFolder function', () => {
                 projectId: 1,
                 directoryName: folder.name,
                 parentDirectory: parentFolder,
-            }).then(result => {
+            }).then((result) => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: true });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -306,7 +306,7 @@ describe('GetFolder function', () => {
                 client,
                 projectId: 1,
                 directoryName: folder.name,
-            }).then(result => {
+            }).then((result) => {
                 expect(result).toStrictEqual({ files: [file], folder: folder, created: true });
                 expect(spyMaxLimit).toBe(undefined);
                 expect(spyProjectId).toBe(1);
@@ -351,7 +351,7 @@ describe('UploadTranslations function', () => {
                     spyFileName = fileName;
                     spyRequestAddStorage = request;
                     spyContentType = contentType;
-                    return new Promise<ResponseObject<UploadStorageModel.Storage>>(resolve => {
+                    return new Promise<ResponseObject<UploadStorageModel.Storage>>((resolve) => {
                         resolve(
                             createMock<ResponseObject<UploadStorageModel.Storage>>({
                                 data: createMock<UploadStorageModel.Storage>({
@@ -368,7 +368,7 @@ describe('UploadTranslations function', () => {
                     languageId: string,
                     request: TranslationsModel.UploadTranslationRequest,
                 ): Promise<ResponseObject<TranslationsModel.UploadTranslationResponse>> => {
-                    return new Promise<ResponseObject<TranslationsModel.UploadTranslationResponse>>(resolve => {
+                    return new Promise<ResponseObject<TranslationsModel.UploadTranslationResponse>>((resolve) => {
                         resolve(
                             createMock<ResponseObject<TranslationsModel.UploadTranslationResponse>>({
                                 data: createMock<TranslationsModel.UploadTranslationResponse>({
@@ -400,7 +400,7 @@ describe('UploadTranslations function', () => {
             fileName: 'fileName',
             fileContent: 'fileContent',
             request,
-        }).then(result => {
+        }).then((result) => {
             expect(result).toStrictEqual({ fileId: 2, languageId: 'language', projectId: 1, storageId: 3 });
             expect(spyFileName).toBe('fileName');
             expect(spyContentType).toBeUndefined();
@@ -449,7 +449,7 @@ describe('CreateOrUpdateWebhook function', () => {
             events: ['file.translated'],
             payload: 'payload',
             url: 'test.com',
-        }).then(result => {
+        }).then((result) => {
             expect(result).toBe(0);
             expect(spyProjectId).toBe(1);
             expect(spyAddRequest).toMatchObject({
@@ -470,7 +470,7 @@ describe('CreateOrUpdateWebhook function', () => {
             payload: 'payload',
             url: 'test.com',
             webhookId: 123,
-        }).then(result => {
+        }).then((result) => {
             expect(result).toBe(123);
             expect(spyProjectId).toBe(1);
             expect(spyWebhookId).toBe(123);
