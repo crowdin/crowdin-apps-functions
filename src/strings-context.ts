@@ -297,7 +297,7 @@ async function fetchGlossaryTerms({
 }
 
 async function fetchScreenshots({ client, projectId, strings }: FetchScreenshotsArgs): Promise<AnnotatedScreenshot[]> {
-    const stringIds = strings.map(str => str.id);
+    const stringIds = strings.map((str) => str.id);
     const screenshotsData = await client.screenshotsApi.withFetchAll().listScreenshots(projectId, {
         stringIds,
     });
@@ -313,7 +313,7 @@ async function fetchScreenshots({ client, projectId, strings }: FetchScreenshots
         const tracks = tags
             .filter((tag: any) => stringIds.includes(tag.stringId))
             .map((tag: any) => {
-                const stringNode = strings.find(str => str.id === tag.stringId);
+                const stringNode = strings.find((str) => str.id === tag.stringId);
                 const text = stringNode ? (stringNode.text as string) : `ID: ${tag.stringId}`;
                 return {
                     x: tag.position.x,
@@ -405,7 +405,7 @@ export async function getStringsContext(args: StringsContextArgs): Promise<GetSt
     }
 
     const sourceLanguageId = project.sourceLanguage?.id || 'en';
-    const expressions: string[] = strings.map(string => string.text as string);
+    const expressions: string[] = strings.map((string) => string.text as string);
 
     let tmSuggestions: TranslationMemorySuggestion[] = [];
     let glossaryTerms: GlossariesModel.ConcordanceSearchResponse[] = [];

@@ -176,7 +176,7 @@ export async function getFolder(
         args = { directories: directoriesOrArgs, client: crowdinClient, projectId, directoryName, parentDirectory };
     }
     const folder = args.directories.find(
-        d =>
+        (d) =>
             d.name === args.directoryName &&
             ((!args.parentDirectory && !d.directoryId) || d.directoryId === args.parentDirectory?.id),
     );
@@ -184,7 +184,7 @@ export async function getFolder(
     if (folder) {
         files = (
             await args.client.sourceFilesApi.withFetchAll().listProjectFiles(args.projectId, { directoryId: folder.id })
-        ).data.map(e => e.data);
+        ).data.map((e) => e.data);
     }
     return { folder, files };
 }
@@ -250,7 +250,7 @@ export async function getOrCreateFolder(
         ).data;
         files = (
             await args.client.sourceFilesApi.withFetchAll().listProjectFiles(args.projectId, { directoryId: folder.id })
-        ).data.map(e => e.data);
+        ).data.map((e) => e.data);
     }
     return { folder, files, created };
 }
@@ -369,7 +369,7 @@ export async function updateSourceFiles(
     const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
 
     const { folder, files } = await getOrCreateFolder({
-        directories: directories.data.map(d => d.data),
+        directories: directories.data.map((d) => d.data),
         client: args.client,
         projectId: args.projectId,
         directoryName: args.directory,
@@ -378,7 +378,7 @@ export async function updateSourceFiles(
 
     await Promise.all(
         args.fileEntities.map(
-            async fileEntity =>
+            async (fileEntity) =>
                 await updateOrCreateFile({
                     client: args.client,
                     projectId: args.projectId,
@@ -387,7 +387,7 @@ export async function updateSourceFiles(
                     type: fileEntity.type,
                     directoryId: folder.id,
                     data: fileEntity.data,
-                    file: files.find(f => f.name === fileEntity.name),
+                    file: files.find((f) => f.name === fileEntity.name),
                 }),
         ),
     );
@@ -445,7 +445,7 @@ export async function handleTranslations(
     const directories = await args.client.sourceFilesApi.withFetchAll().listProjectDirectories(args.projectId);
 
     const { files } = await getFolder({
-        directories: directories.data.map(d => d.data),
+        directories: directories.data.map((d) => d.data),
         client: args.client,
         projectId: args.projectId,
         directoryName: args.directory,
@@ -453,12 +453,12 @@ export async function handleTranslations(
     });
 
     for (const [fileId, targetLanguages] of Object.entries(args.request)) {
-        const file = files.find(f => f.id === parseInt(fileId));
+        const file = files.find((f) => f.id === parseInt(fileId));
         if (!file) {
             continue;
         }
         await Promise.all(
-            targetLanguages.map(async languageCode => {
+            targetLanguages.map(async (languageCode) => {
                 const translationsLink = await args.client.translationsApi.buildProjectFileTranslation(
                     args.projectId,
                     file.id,
@@ -517,7 +517,7 @@ export async function createOrUpdateWebhook(args: CreateOrUpdateWebhookArgs): Pr
     let id = webhookId;
     if (webhookMatch) {
         const webhooks = await client.webhooksApi.withFetchAll().listWebhooks(projectId);
-        const webhook = webhooks.data.find(e => webhookMatch(e.data));
+        const webhook = webhooks.data.find((e) => webhookMatch(e.data));
         if (webhook) {
             id = webhook.data.id;
         }
