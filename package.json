@@ -55,7 +55,6 @@
   "dependencies": {
     "@crowdin/crowdin-api-client": "^1.48.3",
     "axios": "1.13.5",
-    "jimp": "^0.22.12",
     "jsonwebtoken": "^9.0.0"
   },
   "bugs": {
