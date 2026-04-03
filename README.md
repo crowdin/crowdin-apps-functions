@@ -10,6 +10,9 @@
 
 Lightweight library with utility functions to help you quickly create your own Crowdin App.
 
+> [!WARNING]
+> **Deprecated:** This package is deprecated. The same helpers are provided by the Crowdin Apps SDK - see [App Functions](https://crowdin.github.io/app-project-module/reference/app-functions/) for imports (`@crowdin/app-project-module/functions/token`, `@crowdin/app-project-module/functions/crowdin`) and usage.
+
 Information about Crowdin Apps can be found in the [About Crowdin Apps](https://developer.crowdin.com/crowdin-apps-about/) and in the [Quick Start](https://developer.crowdin.com/crowdin-apps-quick-start/) guide.
 
 <div align="center">
